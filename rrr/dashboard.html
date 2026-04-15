@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hospital Dashboard – GovHealth Monitor Telangana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Monitor</div><div class="brand-sub d-none d-md-block">తెలంగాణ ఆరోగ్య పర్యవేక్షణ</div></div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="dashboard.html"><i class="fa-solid fa-hospital me-1"></i>Hospitals</a></li>
+        <li class="nav-item"><a class="nav-link" href="emergency.html"><i class="fa-solid fa-bell-ring me-1"></i>Emergency</a></li>
+        <li class="nav-item"><a class="nav-link" href="schemes.html"><i class="fa-solid fa-hand-holding-heart me-1"></i>Schemes</a></li>
+        <li class="nav-item"><a class="nav-link" href="elderly-care.html"><i class="fa-solid fa-person-cane me-1"></i>Elderly Care</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        <li class="nav-item ms-lg-2" id="navAuthItem"><a class="nav-link btn-admin-nav" href="login.html"><i class="fa-solid fa-lock me-1"></i>Login</a></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-outline-light" id="darkModeToggle" onclick="toggleDark()"><i class="fa-solid fa-moon"></i></button></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-lang" id="langToggle" onclick="toggleLang()">తెలుగు</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title"><i class="fa-solid fa-hospital me-2"></i>Hospital Resource Dashboard</h1>
+    <p class="page-sub">Real-time resource availability across Telangana Government Hospitals</p>
+  </div>
+</div>
+
+<section class="py-4"><div class="container"><div class="row g-3" id="summaryStats"></div></div></section>
+
+<section class="py-3">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-lg-8">
+        <div class="card chart-card h-100"><div class="card-body">
+          <h6 class="chart-title"><i class="fa-solid fa-chart-bar me-2 text-primary"></i>Key Resources — Top 6 Hospitals</h6>
+          <canvas id="hospitalChart" height="90"></canvas>
+        </div></div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card chart-card h-100"><div class="card-body">
+          <h6 class="chart-title"><i class="fa-solid fa-chart-pie me-2 text-danger"></i>Bed Occupancy State-Wide</h6>
+          <canvas id="pieChart" height="160"></canvas>
+          <div id="pieLabels" class="mt-2"></div>
+        </div></div>
+      </div>
+    </div>
+    <div class="pictorial-summary mb-4">
+      <h6 class="chart-title mb-3"><i class="fa-solid fa-chart-simple me-2 text-success"></i>Pictorial Resource Overview</h6>
+      <div class="row g-3" id="pictorialGrid"></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-2">
+  <div class="container">
+    <div class="search-filter-bar">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-4">
+          <div class="search-wrap"><i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" class="form-control search-input" id="searchInput" placeholder="Search hospital or district...">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-filter active" onclick="filterBy('all',this)">All</button>
+            <button class="btn btn-filter" onclick="filterBy('beds',this)"><i class="fa-solid fa-bed me-1"></i>Has Beds</button>
+            <button class="btn btn-filter" onclick="filterBy('icu',this)"><i class="fa-solid fa-heart-pulse me-1"></i>ICU</button>
+            <button class="btn btn-filter" onclick="filterBy('oxygen',this)"><i class="fa-solid fa-wind me-1"></i>O₂</button>
+            <button class="btn btn-filter" onclick="filterBy('ventilator',this)"><i class="fa-solid fa-lungs me-1"></i>Ventilator</button>
+            <button class="btn btn-filter" onclick="filterBy('ambulance',this)"><i class="fa-solid fa-ambulance me-1"></i>Ambulance</button>
+          </div>
+        </div>
+        <div class="col-md-2 text-md-end">
+          <button class="btn btn-refresh" onclick="refreshData()"><i class="fa-solid fa-rotate-right me-1"></i>Refresh</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-3 pb-5">
+  <div class="container">
+    <div class="row g-4" id="hospitalList"></div>
+    <div id="noResults" class="text-center py-5 d-none"><i class="fa-solid fa-magnifying-glass fa-3x text-muted mb-3"></i><h5 class="text-muted">No hospitals found.</h5></div>
+  </div>
+</section>
+
+<a href="emergency.html" class="sos-float-btn"><i class="fa-solid fa-bell"></i><span>SOS</span></a>
+<footer class="site-footer py-4"><div class="container text-center footer-copy">© 2025 GovHealth Monitor Telangana | Emergency: <strong>108</strong></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/data.js"></script><script src="js/main.js"></script>
+<script>
+let currentFilter='all',allHospitals=[];
+function rb(v,lo,hi){return v<=lo?'badge-danger':v<=hi?'badge-warning':'badge-success';}
+function resItem(icon,ic,label,val,bc){return `<div class="res-item"><div class="ri-icon ${ic}"><i class="fa-solid ${icon}"></i></div><div class="ri-val"><span class="res-val ${bc}">${val}</span></div><div class="ri-label">${label}</div></div>`;}
+
+function buildCard(h){
+  const b=h.beds,eq=h.equipment,st=h.staff,em=h.emergency;
+  const totB=b.occupied+b.available||1;
+  const pctOcc=Math.round(b.occupied/totB*100);
+  return `<div class="col-12 hosp-card-col" data-name="${h.name.toLowerCase()}" data-loc="${h.location.toLowerCase()}">
+  <div class="hospital-card-full">
+    <div class="hcf-header">
+      <div class="hcf-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div class="flex-grow-1">
+        <div class="hcf-name">${h.name}</div>
+        <div class="hcf-loc"><i class="fa-solid fa-location-dot me-1"></i>${h.location}</div>
+      </div>
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <span class="hcf-updated"><i class="fa-solid fa-clock me-1"></i>${h.updated}</span>
+        <a href="tel:${h.contact}" class="btn btn-sm btn-call"><i class="fa-solid fa-phone me-1"></i>${h.contact}</a>
+        <a href="${h.maps}" target="_blank" class="btn btn-sm btn-maps"><i class="fa-solid fa-map-location-dot me-1"></i>Maps</a>
+      </div>
+    </div>
+    <ul class="nav nav-tabs hcf-nav-tabs" role="tablist">
+      <li class="nav-item"><a class="nav-link active" href="#beds_${h.id}" data-bs-toggle="tab"><i class="fa-solid fa-bed me-1"></i>Beds</a></li>
+      <li class="nav-item"><a class="nav-link" href="#equip_${h.id}" data-bs-toggle="tab"><i class="fa-solid fa-stethoscope me-1"></i>Equipment</a></li>
+      <li class="nav-item"><a class="nav-link" href="#staff_${h.id}" data-bs-toggle="tab"><i class="fa-solid fa-user-doctor me-1"></i>Staff</a></li>
+      <li class="nav-item"><a class="nav-link" href="#emerg_${h.id}" data-bs-toggle="tab"><i class="fa-solid fa-ambulance me-1"></i>Emergency Svcs</a></li>
+    </ul>
+    <div class="tab-content hcf-tab-content">
+      <div class="tab-pane fade show active" id="beds_${h.id}">
+        <div class="res-grid">
+          ${resItem('fa-bed','text-primary','General Beds',b.general,rb(b.general,30,100))}
+          ${resItem('fa-heart-pulse','text-danger','ICU Beds',b.icu,rb(b.icu,5,15))}
+          ${resItem('fa-truck-medical','text-warning','Emergency Beds',b.emergency,rb(b.emergency,5,15))}
+          ${resItem('fa-baby','text-pink','Maternity Beds',b.maternity,rb(b.maternity,10,30))}
+          ${resItem('fa-child','text-info','Pediatric Beds',b.pediatric,rb(b.pediatric,10,30))}
+          ${resItem('fa-virus','text-purple','Isolation Beds',b.isolation,rb(b.isolation,2,8))}
+          ${resItem('fa-bed-pulse','text-danger','Occupied Beds',b.occupied,'badge-danger')}
+          ${resItem('fa-circle-check','text-success','Available Beds',b.available,rb(b.available,10,40))}
+        </div>
+        <div class="mt-3">
+          <div class="bed-bar-label"><span>Occupied: ${b.occupied}</span><span>Available: ${b.available}</span></div>
+          <div class="progress bed-progress mt-1">
+            <div class="progress-bar bg-danger" style="width:${pctOcc}%" title="Occupied ${pctOcc}%"></div>
+            <div class="progress-bar bg-success" style="width:${100-pctOcc}%" title="Available ${100-pctOcc}%"></div>
+          </div>
+          <small class="text-muted">${pctOcc}% Occupancy Rate</small>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="equip_${h.id}">
+        <div class="res-grid">
+          ${resItem('fa-wind','text-info','Oxygen Cylinders',eq.oxygen,rb(eq.oxygen,10,40))}
+          ${resItem('fa-lungs','text-danger','Ventilators',eq.ventilators,rb(eq.ventilators,3,10))}
+          ${resItem('fa-display','text-primary','Monitors',eq.monitors,rb(eq.monitors,10,30))}
+          ${resItem('fa-wheelchair','text-success','Wheelchairs',eq.wheelchairs,rb(eq.wheelchairs,5,15))}
+          ${resItem('fa-truck-medical','text-warning','Stretchers',eq.stretchers,rb(eq.stretchers,3,10))}
+          ${resItem('fa-droplet','text-cyan','Dialysis Machines',eq.dialysis,rb(eq.dialysis,1,4))}
+          ${resItem('fa-x-ray','text-secondary','X-Ray Machine',eq.xray,rb(eq.xray,0,1))}
+          ${resItem('fa-circle-dot','text-purple','CT Scan',eq.ctscan,rb(eq.ctscan,0,1))}
+          ${resItem('fa-magnet','text-orange','MRI',eq.mri,rb(eq.mri,0,1))}
+          ${resItem('fa-heart','text-danger','ECG Machine',eq.ecg,rb(eq.ecg,1,4))}
+        </div>
+      </div>
+      <div class="tab-pane fade" id="staff_${h.id}">
+        <div class="res-grid">
+          ${resItem('fa-user-doctor','text-primary','Doctors Available',st.doctors,rb(st.doctors,5,15))}
+          ${resItem('fa-user-nurse','text-pink','Nurses Available',st.nurses,rb(st.nurses,15,50))}
+          ${resItem('fa-scissors','text-danger','Surgeons',st.surgeons,rb(st.surgeons,1,5))}
+          ${resItem('fa-kit-medical','text-warning','Emergency Staff',st.emergencyStaff,rb(st.emergencyStaff,3,8))}
+          ${resItem('fa-flask','text-success','Lab Technicians',st.labTech,rb(st.labTech,1,4))}
+          ${resItem('fa-pills','text-info','Pharmacist',st.pharmacist,rb(st.pharmacist,1,3))}
+          ${resItem('fa-person','text-secondary','Ward Boys',st.wardBoys,rb(st.wardBoys,5,15))}
+        </div>
+      </div>
+      <div class="tab-pane fade" id="emerg_${h.id}">
+        <div class="res-grid">
+          ${resItem('fa-ambulance','text-danger','Ambulances Available',em.ambulances,rb(em.ambulances,1,3))}
+          ${resItem('fa-droplet','text-danger','Blood Units Available',em.bloodUnits,rb(em.bloodUnits,20,80))}
+          ${resItem('fa-wind','text-info','Oxygen Plant Status',em.oxygenPlant?'Active':'Inactive',em.oxygenPlant?'badge-success':'badge-danger')}
+          ${resItem('fa-scalpel','text-warning','Operation Theaters',em.operationTheaters,rb(em.operationTheaters,0,2))}
+          ${resItem('fa-triangle-exclamation','text-danger','Trauma Center',em.traumaCenter?'Yes':'No',em.traumaCenter?'badge-success':'badge-danger')}
+          ${resItem('fa-clock','text-success','24/7 Emergency',em.open247?'Open':'Closed',em.open247?'badge-success':'badge-danger')}
+        </div>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function renderSummary(){
+  const h=allHospitals;
+  const tB=h.reduce((s,x)=>s+x.beds.available,0),tI=h.reduce((s,x)=>s+x.beds.icu,0),tO=h.reduce((s,x)=>s+x.equipment.oxygen,0);
+  const tV=h.reduce((s,x)=>s+x.equipment.ventilators,0),tD=h.reduce((s,x)=>s+x.staff.doctors,0);
+  const tA=h.reduce((s,x)=>s+x.emergency.ambulances,0),tBl=h.reduce((s,x)=>s+x.emergency.bloodUnits,0);
+  const sos=getEmergencyRequests().filter(r=>r.status==='Pending').length;
+  document.getElementById('summaryStats').innerHTML=`
+    <div class="col-6 col-md-3"><div class="sum-card sum-blue"><div class="sum-icon"><i class="fa-solid fa-bed"></i></div><div><div class="sum-val">${tB}</div><div class="sum-label">Available Beds</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-red"><div class="sum-icon"><i class="fa-solid fa-heart-pulse"></i></div><div><div class="sum-val">${tI}</div><div class="sum-label">ICU Beds</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-cyan"><div class="sum-icon"><i class="fa-solid fa-wind"></i></div><div><div class="sum-val">${tO}</div><div class="sum-label">Oxygen Cylinders</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-purple"><div class="sum-icon"><i class="fa-solid fa-lungs"></i></div><div><div class="sum-val">${tV}</div><div class="sum-label">Ventilators</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-green"><div class="sum-icon"><i class="fa-solid fa-user-doctor"></i></div><div><div class="sum-val">${tD}</div><div class="sum-label">Doctors</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-orange"><div class="sum-icon"><i class="fa-solid fa-ambulance"></i></div><div><div class="sum-val">${tA}</div><div class="sum-label">Ambulances</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-maroon"><div class="sum-icon"><i class="fa-solid fa-droplet"></i></div><div><div class="sum-val">${tBl}</div><div class="sum-label">Blood Units</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="sum-card sum-sos"><div class="sum-icon"><i class="fa-solid fa-bell-ring"></i></div><div><div class="sum-val">${sos}</div><div class="sum-label">Pending SOS</div></div></div></div>`;
+}
+
+function renderPictorial(){
+  const h=allHospitals;
+  const items=[
+    {icon:'fa-bed',label:'Available Beds',val:h.reduce((s,x)=>s+x.beds.available,0),max:1200,color:'#1565C0'},
+    {icon:'fa-heart-pulse',label:'ICU Beds',val:h.reduce((s,x)=>s+x.beds.icu,0),max:200,color:'#C62828'},
+    {icon:'fa-wind',label:'Oxygen Cylinders',val:h.reduce((s,x)=>s+x.equipment.oxygen,0),max:600,color:'#0277BD'},
+    {icon:'fa-lungs',label:'Ventilators',val:h.reduce((s,x)=>s+x.equipment.ventilators,0),max:150,color:'#7B1FA2'},
+    {icon:'fa-user-doctor',label:'Doctors',val:h.reduce((s,x)=>s+x.staff.doctors,0),max:250,color:'#2E7D32'},
+    {icon:'fa-ambulance',label:'Ambulances',val:h.reduce((s,x)=>s+x.emergency.ambulances,0),max:40,color:'#E65100'},
+    {icon:'fa-droplet',label:'Blood Units',val:h.reduce((s,x)=>s+x.emergency.bloodUnits,0),max:1000,color:'#B71C1C'},
+    {icon:'fa-bell-ring',label:'Pending SOS',val:getEmergencyRequests().filter(r=>r.status==='Pending').length,max:20,color:'#FF6F00'},
+  ];
+  document.getElementById('pictorialGrid').innerHTML=items.map(it=>{
+    const pct=Math.min(100,Math.round(it.val/(it.max||1)*100));
+    const cls=pct<30?'bg-danger':pct<70?'bg-warning':'bg-success';
+    return `<div class="col-6 col-md-3"><div class="pictorial-card">
+      <div class="pic-icon" style="color:${it.color}"><i class="fa-solid ${it.icon}"></i></div>
+      <div class="pic-val" style="color:${it.color}">${it.val}</div>
+      <div class="pic-label">${it.label}</div>
+      <div class="progress pic-progress mt-2"><div class="progress-bar ${cls}" style="width:${pct}%"></div></div>
+      <small class="text-muted">${pct}% of capacity</small>
+    </div></div>`;
+  }).join('');
+}
+
+let chartBar=null,chartPie=null;
+function renderCharts(){
+  const top=allHospitals.slice(0,6);
+  const names=top.map(h=>h.name.split(',')[0].split(' ').slice(0,2).join(' '));
+  if(chartBar)chartBar.destroy();
+  chartBar=new Chart(document.getElementById('hospitalChart').getContext('2d'),{type:'bar',data:{labels:names,datasets:[
+    {label:'Avail Beds',data:top.map(h=>h.beds.available),backgroundColor:'#1976D2bb',borderRadius:5},
+    {label:'ICU',data:top.map(h=>h.beds.icu),backgroundColor:'#E53935bb',borderRadius:5},
+    {label:'Oxygen',data:top.map(h=>h.equipment.oxygen),backgroundColor:'#00897Bbb',borderRadius:5},
+    {label:'Ventilators',data:top.map(h=>h.equipment.ventilators),backgroundColor:'#7B1FA2bb',borderRadius:5},
+    {label:'Doctors',data:top.map(h=>h.staff.doctors),backgroundColor:'#F57C00bb',borderRadius:5},
+  ]},options:{responsive:true,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{y:{beginAtZero:true}}}});
+  const tA=allHospitals.reduce((s,h)=>s+h.beds.available,0),tO=allHospitals.reduce((s,h)=>s+h.beds.occupied,0);
+  if(chartPie)chartPie.destroy();
+  chartPie=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'doughnut',data:{labels:['Available','Occupied'],datasets:[{data:[tA,tO],backgroundColor:['#43A047','#E53935'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  document.getElementById('pieLabels').innerHTML=`<div class="d-flex justify-content-around text-center"><div><div class="fw-bold text-success">${tA}</div><small>Available</small></div><div><div class="fw-bold text-danger">${tO}</div><small>Occupied</small></div></div>`;
+}
+
+function filterBy(type,btn){currentFilter=type;document.querySelectorAll('.btn-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyFilters();}
+function applyFilters(){
+  let list=allHospitals;
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  if(q)list=list.filter(h=>h.name.toLowerCase().includes(q)||h.location.toLowerCase().includes(q));
+  if(currentFilter==='beds')list=list.filter(h=>h.beds.available>0);
+  if(currentFilter==='icu')list=list.filter(h=>h.beds.icu>0);
+  if(currentFilter==='oxygen')list=list.filter(h=>h.equipment.oxygen>0);
+  if(currentFilter==='ventilator')list=list.filter(h=>h.equipment.ventilators>0);
+  if(currentFilter==='ambulance')list=list.filter(h=>h.emergency.ambulances>0);
+  const el=document.getElementById('hospitalList');
+  document.getElementById('noResults').classList.toggle('d-none',list.length>0);
+  el.innerHTML=list.length?list.map(buildCard).join(''):'';
+}
+function refreshData(){simulateLiveUpdate();allHospitals=getHospitals();applyFilters();renderSummary();renderCharts();renderPictorial();showToast('Data refreshed!');}
+document.addEventListener('DOMContentLoaded',()=>{
+  allHospitals=getHospitals();renderSummary();applyFilters();renderCharts();renderPictorial();
+  document.getElementById('searchInput').addEventListener('input',applyFilters);
+  setInterval(()=>{simulateLiveUpdate();allHospitals=getHospitals();applyFilters();renderSummary();renderPictorial();},60000);
+});
+</script>
+</body>
+</html>

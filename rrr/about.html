@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About – GovHealth Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Monitor</div></div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="fa-solid fa-hospital me-1"></i>Hospitals</a></li>
+        <li class="nav-item"><a class="nav-link" href="emergency.html"><i class="fa-solid fa-person-falling-burst me-1"></i>Emergency</a></li>
+        <li class="nav-item"><a class="nav-link" href="schemes.html"><i class="fa-solid fa-hand-holding-heart me-1"></i>Schemes</a></li>
+        <li class="nav-item"><a class="nav-link active" href="about.html"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        <li class="nav-item ms-lg-2"><a class="nav-link btn-admin-nav" href="admin-login.html"><i class="fa-solid fa-lock me-1"></i>Admin</a></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-outline-light" id="darkModeToggle" onclick="toggleDark()"><i class="fa-solid fa-moon"></i></button></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-lang" id="langToggle" onclick="toggleLang()">తెలుగు</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title"><i class="fa-solid fa-circle-info me-2"></i>About This Project</h1>
+    <p class="page-sub">Understanding the purpose, objectives, and impact of GovHealth Monitor</p>
+  </div>
+</div>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-md-6">
+        <div class="about-section-card">
+          <div class="about-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <h4>Problem Statement</h4>
+          <p>Rural communities in India face severe challenges in accessing government hospital resources. People travel long distances only to find beds, ICU slots, or oxygen cylinders unavailable. Elderly and poor patients have no way to check availability before visiting. Emergency assistance for senior citizens is also extremely limited in rural areas, leaving many without timely care during critical situations.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="about-section-card">
+          <div class="about-icon" style="background:#1565C022;color:#1565C0"><i class="fa-solid fa-bullseye"></i></div>
+          <h4>Objectives</h4>
+          <ul class="about-list">
+            <li>Provide real-time visibility of hospital bed and resource availability</li>
+            <li>Enable elderly citizens to send emergency SOS requests digitally</li>
+            <li>Inform poor and BPL families about government healthcare schemes</li>
+            <li>Reduce unnecessary hospital visits by enabling pre-verification</li>
+            <li>Empower hospital administrators with easy update tools</li>
+            <li>Create a simple, accessible interface usable by rural populations</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="about-section-card">
+          <div class="about-icon" style="background:#E5393522;color:#E53935"><i class="fa-solid fa-heart"></i></div>
+          <h4>Motivation</h4>
+          <p>Inspired by the challenges faced during COVID-19 when patients and families desperately searched for available hospital beds, oxygen cylinders, and ICU slots. Rural and elderly populations were the worst affected. This system aims to prevent such helplessness by putting real-time information in the hands of every citizen, regardless of their technical literacy.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="about-section-card">
+          <div class="about-icon" style="background:#00897B22;color:#00897B"><i class="fa-solid fa-check-circle"></i></div>
+          <h4>Advantages</h4>
+          <ul class="about-list">
+            <li>Saves time and travel for rural patients</li>
+            <li>Large, simple UI accessible to elderly users</li>
+            <li>Bilingual support (English + Telugu)</li>
+            <li>Zero-cost emergency SOS for senior citizens</li>
+            <li>Centralized government scheme information</li>
+            <li>Real-time data with auto-refresh</li>
+            <li>Admin panel for easy resource management</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="py-5 modules-section">
+  <div class="container">
+    <h3 class="section-title text-center mb-5">System Modules</h3>
+    <div class="row g-4 justify-content-center">
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="module-card text-center">
+          <div class="mod-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="mod-name">User Module</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="module-card text-center">
+          <div class="mod-icon"><i class="fa-solid fa-hospital"></i></div>
+          <div class="mod-name">Hospital Monitoring</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="module-card text-center">
+          <div class="mod-icon"><i class="fa-solid fa-bell-ring"></i></div>
+          <div class="mod-name">Emergency Module</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="module-card text-center">
+          <div class="mod-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+          <div class="mod-name">Schemes Awareness</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="module-card text-center">
+          <div class="mod-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="mod-name">Admin Module</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURE SCOPE -->
+<section class="py-5">
+  <div class="container">
+    <h3 class="section-title text-center mb-4">Future Scope</h3>
+    <div class="row g-3">
+      <div class="col-md-4"><div class="future-card"><i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Native Mobile App (Android & iOS)</div></div>
+      <div class="col-md-4"><div class="future-card"><i class="fa-solid fa-database me-2 text-success"></i>Live API Integration with Hospitals</div></div>
+      <div class="col-md-4"><div class="future-card"><i class="fa-solid fa-language me-2 text-warning"></i>Support for all Indian languages</div></div>
+      <div class="col-md-4"><div class="future-card"><i class="fa-solid fa-robot me-2 text-info"></i>AI Chatbot for Health Queries</div></div>
+      <div class="col-md-4"><div class="future-card"><i class="fa-solid fa-bell me-2 text-danger"></i>SMS/WhatsApp Emergency Alerts</div></div>
+      <div class="col-md-4"><div class="future-card"><i class="fa-solid fa-chart-line me-2 text-purple"></i>Predictive Resource Analytics</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="py-5 tech-section">
+  <div class="container">
+    <h3 class="section-title text-center mb-4">Technologies Used</h3>
+    <div class="row g-3 justify-content-center">
+      <div class="col-auto"><div class="tech-badge"><i class="fa-brands fa-html5 text-danger me-2"></i>HTML5</div></div>
+      <div class="col-auto"><div class="tech-badge"><i class="fa-brands fa-css3-alt text-primary me-2"></i>CSS3</div></div>
+      <div class="col-auto"><div class="tech-badge"><i class="fa-brands fa-js text-warning me-2"></i>JavaScript</div></div>
+      <div class="col-auto"><div class="tech-badge"><i class="fa-brands fa-bootstrap text-purple me-2"></i>Bootstrap 5</div></div>
+      <div class="col-auto"><div class="tech-badge"><i class="fa-solid fa-chart-bar text-success me-2"></i>Chart.js</div></div>
+      <div class="col-auto"><div class="tech-badge"><i class="fa-solid fa-database text-info me-2"></i>LocalStorage</div></div>
+    </div>
+  </div>
+</section>
+
+<a href="emergency.html" class="sos-float-btn"><i class="fa-solid fa-bell"></i><span>SOS</span></a>
+
+<footer class="site-footer py-4">
+  <div class="container text-center footer-copy">
+    © 2025 GovHealth Monitor | Emergency: <strong>108</strong>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

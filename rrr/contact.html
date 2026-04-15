@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact – GovHealth Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Monitor</div></div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="fa-solid fa-hospital me-1"></i>Hospitals</a></li>
+        <li class="nav-item"><a class="nav-link" href="emergency.html"><i class="fa-solid fa-person-falling-burst me-1"></i>Emergency</a></li>
+        <li class="nav-item"><a class="nav-link" href="schemes.html"><i class="fa-solid fa-hand-holding-heart me-1"></i>Schemes</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link active" href="contact.html"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        <li class="nav-item ms-lg-2" id="navAuthItem"><a class="nav-link btn-admin-nav" href="login.html"><i class="fa-solid fa-lock me-1"></i>Login</a></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-outline-light" id="darkModeToggle" onclick="toggleDark()"><i class="fa-solid fa-moon"></i></button></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-lang" id="langToggle" onclick="toggleLang()">తెలుగు</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title"><i class="fa-solid fa-envelope me-2"></i>Contact Us</h1>
+    <p class="page-sub">Get help, report issues, or share feedback</p>
+  </div>
+</div>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-md-7">
+        <div class="contact-form-card">
+          <h4 class="mb-4"><i class="fa-solid fa-paper-plane me-2 text-primary"></i>Send Us a Message</h4>
+          <form id="contactForm">
+            <div class="mb-3">
+              <label class="form-label">Your Name *</label>
+              <input type="text" class="form-control" id="cName" placeholder="Enter your full name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" id="cEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone Number (optional)</label>
+              <input type="tel" class="form-control" id="cPhone" placeholder="Enter phone number">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Subject *</label>
+              <select class="form-select" id="cSubject" required>
+                <option value="">Select subject...</option>
+                <option>Hospital Data Issue</option>
+                <option>Emergency Assistance</option>
+                <option>Government Scheme Query</option>
+                <option>Technical Problem</option>
+                <option>General Feedback</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Message *</label>
+              <textarea class="form-control" id="cMessage" rows="5" placeholder="Write your message here..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-contact-submit w-100">
+              <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+            </button>
+          </form>
+          <div id="contactSuccess" class="alert alert-success mt-3 d-none">
+            <i class="fa-solid fa-check-circle me-2"></i>Thank you! Your message has been received. We'll respond within 24 hours.
+          </div>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="contact-info-wrap">
+          <div class="contact-info-card mb-3">
+            <h5><i class="fa-solid fa-phone me-2 text-primary"></i>Helplines</h5>
+            <div class="ci-item"><span>Medical Emergency</span><strong>108</strong></div>
+            <div class="ci-item"><span>Health Helpline</span><strong>104</strong></div>
+            <div class="ci-item"><span>Senior Citizen</span><strong>14567</strong></div>
+            <div class="ci-item"><span>Women Helpline</span><strong>181</strong></div>
+          </div>
+          <div class="contact-info-card mb-3">
+            <h5><i class="fa-solid fa-building me-2 text-success"></i>Office Address</h5>
+            <p class="mb-0">Department of Health & Family Welfare,<br>Government of Telangana,<br>Hyderabad – 500028, Telangana, India</p>
+          </div>
+          <div class="contact-info-card">
+            <h5><i class="fa-solid fa-clock me-2 text-warning"></i>Working Hours</h5>
+            <div class="ci-item"><span>Mon – Sat</span><strong>9 AM – 6 PM</strong></div>
+            <div class="ci-item"><span>Emergency (108)</span><strong>24 × 7</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<a href="emergency.html" class="sos-float-btn"><i class="fa-solid fa-bell"></i><span>SOS</span></a>
+
+<footer class="site-footer py-4">
+  <div class="container text-center footer-copy">
+    © 2025 GovHealth Monitor | Emergency: <strong>108</strong>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  // Save to localStorage
+  const contacts = JSON.parse(localStorage.getItem('govhealth_contacts') || '[]');
+  contacts.unshift({
+    id: Date.now(),
+    name: document.getElementById('cName').value.trim(),
+    email: document.getElementById('cEmail').value.trim(),
+    phone: document.getElementById('cPhone').value.trim(),
+    subject: document.getElementById('cSubject').value,
+    message: document.getElementById('cMessage').value.trim(),
+    submittedAt: new Date().toLocaleString(),
+    read: false
+  });
+  localStorage.setItem('govhealth_contacts', JSON.stringify(contacts));
+  document.getElementById('contactSuccess').classList.remove('d-none');
+  this.reset();
+  setTimeout(() => document.getElementById('contactSuccess').classList.add('d-none'), 6000);
+});
+</script>
+</body>
+</html>

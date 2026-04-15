@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Government Schemes – GovHealth Monitor Telangana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* ── FILTER SYSTEM ─────────────────────────────────────── */
+    .filter-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px; margin-bottom: 28px; box-shadow: var(--shadow); }
+    .filter-row-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+
+    /* Row 1 — Source (Telangana / Central) */
+    .source-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .source-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 100px; border: 2px solid var(--border);
+      background: var(--surface2); color: var(--text); font-weight: 700; font-size: 0.88rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .source-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .source-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .source-btn.tg-btn.active { background: #C62828; border-color: #C62828; }
+    .source-btn.cg-btn.active { background: #1565C0; border-color: #1565C0; }
+    .source-btn .s-count { background: rgba(255,255,255,0.25); font-size: 0.72rem; padding: 1px 7px; border-radius: 100px; }
+    body:not(.dark-mode) .source-btn:not(.active) .s-count { background: rgba(0,0,0,0.08); }
+
+    /* Row 2 — Topic (category chips) */
+    .topic-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .topic-chip {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 100px;
+      border: 2px solid var(--border); background: var(--surface2);
+      color: var(--text); font-weight: 600; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .topic-chip .chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .topic-chip:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .topic-chip.active { color: #fff; border-color: transparent; }
+    .topic-chip .tc-count { font-size: 0.72rem; opacity: 0.8; }
+
+    /* Active state colors per topic */
+    .topic-chip[data-topic="insurance"].active  { background: #1565C0; }
+    .topic-chip[data-topic="women"].active       { background: #AD1457; }
+    .topic-chip[data-topic="children"].active    { background: #E65100; }
+    .topic-chip[data-topic="rural"].active       { background: #2E7D32; }
+    .topic-chip[data-topic="medicines"].active   { background: #00695C; }
+    .topic-chip[data-topic="serious"].active     { background: #C62828; }
+
+    /* Dot colors */
+    .dot-insurance { background: #1565C0; }
+    .dot-women     { background: #AD1457; }
+    .dot-children  { background: #E65100; }
+    .dot-rural     { background: #2E7D32; }
+    .dot-medicines { background: #00695C; }
+    .dot-serious   { background: #C62828; }
+
+    /* Active filter summary bar */
+    .filter-summary {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 16px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px;
+    }
+    .filter-summary .fs-label { color: var(--text-muted); font-weight: 600; }
+    .filter-tag {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--primary); color: #fff;
+      padding: 3px 12px; border-radius: 100px; font-size: 0.78rem; font-weight: 700;
+    }
+    .filter-tag.ft-tg { background: #C62828; }
+    .filter-tag.ft-cg { background: #1565C0; }
+    .filter-tag button { background: none; border: none; color: #fff; padding: 0 0 0 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.8; }
+    .filter-tag button:hover { opacity: 1; }
+    .result-count { margin-left: auto; font-weight: 700; color: var(--primary); font-size: 0.88rem; }
+
+    /* Scheme section headers */
+    .scheme-section-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px; border-radius: 12px; margin-bottom: 16px; margin-top: 8px;
+      font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 1.05rem; color: #fff;
+    }
+    .ssh-tg { background: linear-gradient(135deg, #B71C1C, #C62828); }
+    .ssh-cg { background: linear-gradient(135deg, #0D47A1, #1565C0); }
+
+    /* Topic tags on each scheme card */
+    .topic-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 100px; margin: 2px;
+    }
+    .tt-insurance { background: #E3F2FD; color: #1565C0; }
+    .tt-women     { background: #FCE4EC; color: #AD1457; }
+    .tt-children  { background: #FFF3E0; color: #E65100; }
+    .tt-rural     { background: #E8F5E9; color: #2E7D32; }
+    .tt-medicines { background: #E0F2F1; color: #00695C; }
+    .tt-serious   { background: #FFEBEE; color: #C62828; }
+
+    /* No results */
+    .no-schemes { text-align: center; padding: 60px 20px; }
+    .no-schemes i { font-size: 3rem; color: var(--text-muted); margin-bottom: 16px; display: block; }
+    .clear-filters-btn { margin-top: 12px; display: inline-block; }
+
+    /* Search bar */
+    .scheme-search-wrap { position: relative; margin-bottom: 0; }
+    .scheme-search-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .scheme-search-wrap input { padding-left: 40px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text); }
+    .scheme-search-wrap input:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 3px rgba(21,101,192,0.1); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div>
+        <div class="brand-title">GovHealth Monitor</div>
+        <div class="brand-sub d-none d-md-block">తెలంగాణ ఆరోగ్య పర్యవేక్షణ</div>
+      </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="fa-solid fa-hospital me-1"></i>Hospitals</a></li>
+        <li class="nav-item"><a class="nav-link" href="emergency.html"><i class="fa-solid fa-bell-ring me-1"></i>Emergency</a></li>
+        <li class="nav-item"><a class="nav-link active" href="schemes.html"><i class="fa-solid fa-hand-holding-heart me-1"></i>Schemes</a></li>
+        <li class="nav-item"><a class="nav-link" href="elderly-care.html"><i class="fa-solid fa-person-cane me-1"></i>Elderly Care</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="nav-link btn-admin-nav" href="login.html"><i class="fa-solid fa-lock me-1"></i>Login</a>
+        </li>
+        <li class="nav-item ms-lg-1">
+          <button class="btn btn-sm btn-outline-light" id="darkModeToggle" onclick="toggleDark()">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+        </li>
+        <li class="nav-item ms-lg-1">
+          <button class="btn btn-sm btn-lang" id="langToggle" onclick="toggleLang()">తెలుగు</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title"><i class="fa-solid fa-hand-holding-heart me-2"></i>Government Healthcare Schemes</h1>
+    <p class="page-sub">Free healthcare benefits for BPL families, poor and elderly citizens of Telangana — 25 schemes across 8 categories</p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container mt-4 pb-5">
+
+  <!-- NOTICE -->
+  <div class="alert scheme-notice-alert mb-4">
+    <i class="fa-solid fa-circle-info me-2"></i>
+    <strong>Important:</strong> All these schemes are <strong>completely FREE</strong>. Do not pay anyone claiming fees to enroll. Visit the nearest government hospital or MeeSeva center directly with your Aadhaar card.
+  </div>
+
+  <!-- ── FILTER PANEL ──────────────────────────────────────── -->
+  <div class="filter-panel">
+
+    <!-- ROW 1: Search -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="filter-row-label mb-2"><i class="fa-solid fa-magnifying-glass me-1"></i>Search Schemes</div>
+        <div class="scheme-search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="form-control" id="schemeSearch" placeholder="Search scheme name or keyword...">
+        </div>
+      </div>
+      <div class="col-md-6 d-flex align-items-end">
+        <button class="btn btn-outline-secondary w-100" onclick="clearAllFilters()">
+          <i class="fa-solid fa-rotate-left me-2"></i>Clear All Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- ROW 2: Source Filter -->
+    <div class="mb-4">
+      <div class="filter-row-label"><i class="fa-solid fa-filter me-1"></i>Filter by Source</div>
+      <div class="source-tabs">
+        <button class="source-btn active" data-source="all" onclick="setSource('all', this)">
+          <i class="fa-solid fa-list"></i> All Schemes
+          <span class="s-count" id="cnt-all">0</span>
+        </button>
+        <button class="source-btn tg-btn" data-source="telangana" onclick="setSource('telangana', this)">
+          <i class="fa-solid fa-map-location-dot"></i> Telangana State
+          <span class="s-count" id="cnt-tg">0</span>
+        </button>
+        <button class="source-btn cg-btn" data-source="central" onclick="setSource('central', this)">
+          <i class="fa-solid fa-building-columns"></i> Central Government
+          <span class="s-count" id="cnt-cg">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ROW 3: Topic Filter -->
+    <div>
+      <div class="filter-row-label"><i class="fa-solid fa-tags me-1"></i>Filter by Category (click to toggle)</div>
+      <div class="topic-chips" id="topicChips"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVE FILTER SUMMARY BAR -->
+  <div class="filter-summary" id="filterSummary">
+    <span class="fs-label">Showing:</span>
+    <span id="activeTags"></span>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+
+  <!-- SCHEME LIST -->
+  <div id="schemesList"></div>
+
+</div>
+
+<!-- ELIGIBILITY CHECKER -->
+<section class="py-5 eligibility-section">
+  <div class="container">
+    <h3 class="section-title text-center mb-2">Quick Eligibility Checker</h3>
+    <p class="text-center text-muted mb-4">Answer 3 questions to find which schemes you qualify for</p>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="elig-card">
+          <div class="mb-3">
+            <label class="form-label fw-600">Do you have a BPL / White Ration Card?</label>
+            <select class="form-select" id="eligBPL">
+              <option value="">Select...</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-600">Annual Family Income?</label>
+            <select class="form-select" id="eligIncome">
+              <option value="">Select...</option>
+              <option value="below75k">Below ₹75,000</option>
+              <option value="75k-5l">₹75,000 – ₹5 Lakhs</option>
+              <option value="above5l">Above ₹5 Lakhs</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-600">Who needs the scheme?</label>
+            <select class="form-select" id="eligFor">
+              <option value="">Select...</option>
+              <option value="general">General / Any family member</option>
+              <option value="women">Pregnant woman / New mother</option>
+              <option value="child">Child (0–18 years)</option>
+              <option value="elderly">Elderly (60+ years)</option>
+              <option value="worker">Organised sector worker</option>
+              <option value="kidney">Kidney disease patient</option>
+              <option value="cancer">Cancer patient</option>
+            </select>
+          </div>
+          <button class="btn btn-check-elig w-100" onclick="checkEligibility()">
+            <i class="fa-solid fa-check-circle me-2"></i>Check My Eligibility
+          </button>
+          <div id="eligResult" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOS FAB -->
+<a href="emergency.html" class="sos-float-btn"><i class="fa-solid fa-bell"></i><span>SOS</span></a>
+
+<!-- FOOTER -->
+<footer class="site-footer py-4">
+  <div class="container text-center footer-copy">
+    © 2025 GovHealth Monitor Telangana | Emergency: <strong>108</strong>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+// ── STATE ────────────────────────────────────────────────────
+let activeSource = 'all';   // 'all' | 'telangana' | 'central'
+let activeTopic  = null;    // null | topic key string
+let searchQuery  = '';
+
+// ── TOPIC COLORS (for chip dot) ──────────────────────────────
+const TOPIC_COLORS = {
+  insurance: '#1565C0', women: '#AD1457', children: '#E65100',
+  rural: '#2E7D32', medicines: '#00695C', serious: '#C62828'
+};
+const TOPIC_ICONS = {
+  insurance: 'fa-shield-heart', women: 'fa-venus', children: 'fa-child',
+  rural: 'fa-tree', medicines: 'fa-pills', serious: 'fa-heart-pulse'
+};
+const TOPIC_LABELS = {
+  insurance: 'Health Insurance & Financial Support',
+  women:     'Women & Pregnancy Health',
+  children:  'Children Health',
+  rural:     'Rural & Primary Healthcare',
+  medicines: 'Low-Cost Medicines & Diagnostics',
+  serious:   'Serious Disease Treatment'
+};
+
+// ── BUILD TOPIC CHIPS ────────────────────────────────────────
+function buildTopicChips() {
+  const container = document.getElementById('topicChips');
+  container.innerHTML = Object.keys(TOPIC_META).map(key => {
+    const count = SCHEMES.filter(s => s.topics && s.topics.includes(key)).length;
+    return `
+    <button class="topic-chip" data-topic="${key}"
+      style="--tc:${TOPIC_COLORS[key]}"
+      onclick="setTopic('${key}', this)">
+      <span class="chip-dot dot-${key}"></span>
+      <i class="fa-solid ${TOPIC_ICONS[key]}"></i>
+      ${TOPIC_LABELS[key]}
+      <span class="tc-count">(${count})</span>
+    </button>`;
+  }).join('');
+}
+
+// ── UPDATE COUNTS on source buttons ─────────────────────────
+function updateCounts() {
+  document.getElementById('cnt-all').textContent = SCHEMES.length;
+  document.getElementById('cnt-tg').textContent  = SCHEMES.filter(s=>s.category==='telangana').length;
+  document.getElementById('cnt-cg').textContent  = SCHEMES.filter(s=>s.category==='central').length;
+}
+
+// ── FILTER SETTERS ───────────────────────────────────────────
+function setSource(src, btn) {
+  activeSource = src;
+  document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function setTopic(topic, btn) {
+  if (activeTopic === topic) {
+    // toggle off
+    activeTopic = null;
+    btn.classList.remove('active');
+  } else {
+    activeTopic = topic;
+    document.querySelectorAll('.topic-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  render();
+}
+
+function clearAllFilters() {
+  activeSource = 'all';
+  activeTopic  = null;
+  searchQuery  = '';
+  document.getElementById('schemeSearch').value = '';
+  document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-source="all"]').classList.add('active');
+  document.querySelectorAll('.topic-chip').forEach(b => b.classList.remove('active'));
+  render();
+}
+
+// ── FILTER LOGIC ─────────────────────────────────────────────
+function getFiltered() {
+  let list = SCHEMES;
+  if (activeSource !== 'all') list = list.filter(s => s.category === activeSource);
+  if (activeTopic)            list = list.filter(s => s.topics && s.topics.includes(activeTopic));
+  if (searchQuery)            list = list.filter(s =>
+    s.name.toLowerCase().includes(searchQuery) ||
+    s.nameTE.includes(searchQuery) ||
+    s.description.toLowerCase().includes(searchQuery) ||
+    s.benefits.toLowerCase().includes(searchQuery)
+  );
+  return list;
+}
+
+// ── ACTIVE FILTER SUMMARY ────────────────────────────────────
+function updateFilterSummary(results) {
+  const tagsEl = document.getElementById('activeTags');
+  const countEl = document.getElementById('resultCount');
+  let tags = '';
+
+  if (activeSource === 'all') {
+    tags += '<span class="filter-tag">All Schemes</span>';
+  } else if (activeSource === 'telangana') {
+    tags += '<span class="filter-tag ft-tg"><i class="fa-solid fa-map-location-dot me-1"></i>Telangana State <button onclick="clearSource()">✕</button></span>';
+  } else {
+    tags += '<span class="filter-tag ft-cg"><i class="fa-solid fa-building-columns me-1"></i>Central Govt <button onclick="clearSource()">✕</button></span>';
+  }
+  if (activeTopic) {
+    tags += `<span class="filter-tag" style="background:${TOPIC_COLORS[activeTopic]}">
+      <i class="fa-solid ${TOPIC_ICONS[activeTopic]} me-1"></i>${TOPIC_LABELS[activeTopic]}
+      <button onclick="clearTopic()">✕</button>
+    </span>`;
+  }
+  if (searchQuery) {
+    tags += `<span class="filter-tag" style="background:#607D8B">
+      <i class="fa-solid fa-magnifying-glass me-1"></i>"${searchQuery}"
+      <button onclick="clearSearch()">✕</button>
+    </span>`;
+  }
+  tagsEl.innerHTML = tags;
+  countEl.textContent = `${results.length} scheme${results.length !== 1 ? 's' : ''} found`;
+}
+
+function clearSource() { setSource('all', document.querySelector('[data-source="all"]')); }
+function clearTopic()  { activeTopic = null; document.querySelectorAll('.topic-chip').forEach(b=>b.classList.remove('active')); render(); }
+function clearSearch() { searchQuery=''; document.getElementById('schemeSearch').value=''; render(); }
+
+// ── SCHEME CARD ──────────────────────────────────────────────
+function topicTag(t) {
+  const icons = { insurance:'fa-shield-heart', women:'fa-venus', children:'fa-child', rural:'fa-tree', medicines:'fa-pills', serious:'fa-heart-pulse' };
+  const labels = { insurance:'Insurance', women:'Women', children:'Children', rural:'Rural', medicines:'Medicines', serious:'Critical Care' };
+  return `<span class="topic-tag tt-${t}"><i class="fa-solid ${icons[t]}"></i> ${labels[t]}</span>`;
+}
+
+function renderSchemeCard(s) {
+  const srcBadgeClass = s.category === 'telangana' ? 'badge-tg' : 'badge-cg';
+  const srcLabel = s.category === 'telangana' ? 'Telangana' : 'Central Govt';
+  const topicTags = (s.topics || []).map(topicTag).join('');
+  return `
+  <div class="scheme-card mb-4 animate-fadein">
+    <div class="sc-header" style="border-left: 5px solid ${s.color}">
+      <div class="sc-icon" style="background:${s.color}22; color:${s.color}">
+        <i class="fa-solid ${s.icon}"></i>
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="sc-name">${s.name}</h4>
+        <div class="sc-name-te">${s.nameTE}</div>
+        <div class="mt-1">
+          <span class="sc-cat-badge ${srcBadgeClass}">${srcLabel}</span>
+          ${topicTags}
+        </div>
+      </div>
+      <div class="ms-auto flex-shrink-0">
+        <span class="sc-badge">FREE</span>
+      </div>
+    </div>
+    <div class="sc-body">
+      <p class="sc-desc">${s.description}</p>
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <div class="sc-section">
+            <div class="sc-section-head"><i class="fa-solid fa-user-check me-2"></i>Eligibility</div>
+            <p>${s.eligibility}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="sc-section">
+            <div class="sc-section-head"><i class="fa-solid fa-gift me-2"></i>Benefits</div>
+            <p>${s.benefits}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="sc-section">
+            <div class="sc-section-head"><i class="fa-solid fa-file-lines me-2"></i>Required Documents</div>
+            <p>${s.documents}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="sc-section">
+            <div class="sc-section-head"><i class="fa-solid fa-list-check me-2"></i>How to Apply</div>
+            <p>${s.howToApply}</p>
+          </div>
+        </div>
+      </div>
+      <div class="sc-footer mt-3">
+        <span class="sc-helpline"><i class="fa-solid fa-phone me-1"></i>Helpline: <strong>${s.helpline}</strong></span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── MAIN RENDER ──────────────────────────────────────────────
+function render() {
+  const results = getFiltered();
+  updateFilterSummary(results);
+  const container = document.getElementById('schemesList');
+
+  if (!results.length) {
+    container.innerHTML = `
+    <div class="no-schemes">
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h5 class="text-muted">No schemes match your selected filters</h5>
+      <p class="text-muted">Try changing the source, category filter, or search term.</p>
+      <button class="btn btn-primary clear-filters-btn" onclick="clearAllFilters()">
+        <i class="fa-solid fa-rotate-left me-2"></i>Clear All Filters
+      </button>
+    </div>`;
+    return;
+  }
+
+  // Group by source for "all" view; flat list for filtered view
+  const isFiltered = activeSource !== 'all' || activeTopic || searchQuery;
+  if (!isFiltered) {
+    // Show grouped: Telangana first, then Central
+    const tg = results.filter(s => s.category === 'telangana');
+    const cg = results.filter(s => s.category === 'central');
+    let html = '';
+    if (tg.length) {
+      html += `<div class="scheme-section-header ssh-tg">
+        <i class="fa-solid fa-map-location-dot"></i>
+        Telangana State Schemes
+        <span style="margin-left:auto;font-size:0.85rem;opacity:0.85">${tg.length} schemes</span>
+      </div>`;
+      html += tg.map(renderSchemeCard).join('');
+    }
+    if (cg.length) {
+      html += `<div class="scheme-section-header ssh-cg mt-4">
+        <i class="fa-solid fa-building-columns"></i>
+        Central Government Schemes
+        <span style="margin-left:auto;font-size:0.85rem;opacity:0.85">${cg.length} schemes</span>
+      </div>`;
+      html += cg.map(renderSchemeCard).join('');
+    }
+    container.innerHTML = html;
+  } else {
+    // Flat filtered list — optionally show mini section headers if both categories present
+    const tg = results.filter(s => s.category === 'telangana');
+    const cg = results.filter(s => s.category === 'central');
+    let html = '';
+    if (tg.length && cg.length) {
+      // Both — show headers
+      html += `<div class="scheme-section-header ssh-tg">
+        <i class="fa-solid fa-map-location-dot"></i> Telangana State Schemes
+        <span style="margin-left:auto;font-size:0.85rem;opacity:0.85">${tg.length} schemes</span>
+      </div>`;
+      html += tg.map(renderSchemeCard).join('');
+      html += `<div class="scheme-section-header ssh-cg mt-4">
+        <i class="fa-solid fa-building-columns"></i> Central Government Schemes
+        <span style="margin-left:auto;font-size:0.85rem;opacity:0.85">${cg.length} schemes</span>
+      </div>`;
+      html += cg.map(renderSchemeCard).join('');
+    } else {
+      html = results.map(renderSchemeCard).join('');
+    }
+    container.innerHTML = html;
+  }
+}
+
+// ── ELIGIBILITY CHECKER ──────────────────────────────────────
+function checkEligibility() {
+  const bpl    = document.getElementById('eligBPL').value;
+  const income = document.getElementById('eligIncome').value;
+  const forW   = document.getElementById('eligFor').value;
+  const res    = document.getElementById('eligResult');
+
+  if (!bpl || !income || !forW) {
+    res.innerHTML = '<div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>Please answer all 3 questions.</div>';
+    return;
+  }
+
+  const eligible = [];
+  const isLowIncome = bpl === 'yes' || income === 'below75k' || income === '75k-5l';
+
+  // Always available
+  eligible.push({ name:'Ayushman Bharat PM-JAY', desc:'₹5 lakh health cover', cat:'central', topic:'insurance' });
+  eligible.push({ name:'PM Jan Aushadhi Scheme', desc:'50-90% cheaper generic medicines', cat:'central', topic:'medicines' });
+  eligible.push({ name:'Universal Immunization Programme', desc:'Free 12 vaccines', cat:'central', topic:'children' });
+
+  if (isLowIncome) {
+    eligible.push({ name:'Rajiv Aarogyasri', desc:'Free treatment ₹5 lakhs — Telangana BPL', cat:'telangana', topic:'insurance' });
+    eligible.push({ name:'Telangana Diagnostics', desc:'70+ free tests — Telangana', cat:'telangana', topic:'medicines' });
+    eligible.push({ name:'Basti / Palle Dawakhana', desc:'Free OPD & medicines', cat:'telangana', topic:'rural' });
+    eligible.push({ name:'National Health Mission', desc:'Free primary healthcare', cat:'central', topic:'rural' });
+  }
+
+  if (forW === 'women' || forW === 'general') {
+    eligible.push({ name:'Arogya Lakshmi', desc:'Free nutritious meals during pregnancy', cat:'telangana', topic:'women' });
+    eligible.push({ name:'KCR Kit Scheme', desc:'Free ₹12,000 kit + ₹1,000 cash', cat:'telangana', topic:'women' });
+    eligible.push({ name:'Janani Suraksha Yojana', desc:'₹1,400 cash after delivery', cat:'central', topic:'women' });
+    eligible.push({ name:'PM Matru Vandana Yojana', desc:'₹5,000 maternity benefit', cat:'central', topic:'women' });
+    eligible.push({ name:'Arogya Mahila', desc:'Free cancer screening & gynaecology', cat:'telangana', topic:'women' });
+  }
+
+  if (forW === 'child' || forW === 'general') {
+    eligible.push({ name:'RBSK Child Health Scheme', desc:'Free screening & treatment for children', cat:'telangana', topic:'children' });
+  }
+
+  if (forW === 'elderly' && isLowIncome) {
+    eligible.push({ name:'Cheyutha Scheme', desc:'₹10,000/year for women 57+ (SC/ST/BC)', cat:'telangana', topic:'insurance' });
+  }
+
+  if (forW === 'kidney') {
+    eligible.push({ name:'Telangana Dialysis Scheme', desc:'Free dialysis sessions', cat:'telangana', topic:'serious' });
+    eligible.push({ name:'National Dialysis Programme', desc:'Free dialysis at district hospitals', cat:'central', topic:'serious' });
+  }
+
+  if (forW === 'cancer' && isLowIncome) {
+    eligible.push({ name:'Aarogyasri Cancer Treatment', desc:'Free chemo, radiation, surgery', cat:'telangana', topic:'serious' });
+    eligible.push({ name:'NCDCS Programme', desc:'Free cancer screening & medicines', cat:'central', topic:'serious' });
+  }
+
+  if (forW === 'worker') {
+    eligible.push({ name:'ESI Scheme', desc:'Free medical for workers earning ≤₹21,000/month', cat:'central', topic:'insurance' });
+    eligible.push({ name:'Telangana ESHI Scheme', desc:'For Telangana state govt employees', cat:'telangana', topic:'insurance' });
+    eligible.push({ name:'CGHS', desc:'For Central Govt employees', cat:'central', topic:'insurance' });
+  }
+
+  // Deduplicate
+  const seen = new Set();
+  const unique = eligible.filter(e => { if(seen.has(e.name)) return false; seen.add(e.name); return true; });
+
+  const topicColors = { insurance:'#1565C0', women:'#AD1457', children:'#E65100', rural:'#2E7D32', medicines:'#00695C', serious:'#C62828' };
+
+  res.innerHTML = `
+  <div class="alert alert-success">
+    <strong><i class="fa-solid fa-check-circle me-2"></i>You may be eligible for ${unique.length} schemes:</strong>
+    <div class="mt-3" style="display:flex;flex-direction:column;gap:8px">
+      ${unique.map(e=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.6);border-radius:8px">
+        <span style="width:10px;height:10px;border-radius:50%;background:${topicColors[e.topic]||'#1565C0'};flex-shrink:0"></span>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem">${e.name}</div>
+          <div style="font-size:0.78rem;color:#666">${e.desc} &nbsp;·&nbsp; ${e.cat==='telangana'?'🏛 Telangana':'🇮🇳 Central Govt'}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <p class="mt-3 mb-0"><i class="fa-solid fa-info-circle me-1"></i>Visit nearest government hospital or MeeSeva center with your <strong>Aadhaar + Ration Card</strong> to enroll.</p>
+  </div>`;
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildTopicChips();
+  updateCounts();
+  render();
+
+  document.getElementById('schemeSearch').addEventListener('input', function() {
+    searchQuery = this.value.trim().toLowerCase();
+    render();
+  });
+});
+</script>
+</body>
+</html>
+
+

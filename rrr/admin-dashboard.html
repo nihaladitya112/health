@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – GovHealth Monitor Telangana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg admin-nav sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Admin — Telangana</div></div>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="admin-user-badge"><i class="fa-solid fa-user-shield me-1"></i>Admin</span>
+      <a href="index.html" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-globe me-1"></i>View Site</a>
+      <button class="btn btn-sm btn-outline-light" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket me-1"></i>Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2 admin-sidebar">
+      <div class="admin-menu">
+        <a href="#" class="admin-menu-item active" onclick="showTab('hospitals',this)"><i class="fa-solid fa-hospital"></i><span>Hospitals</span></a>
+        <a href="#" class="admin-menu-item" onclick="showTab('emergency',this)"><i class="fa-solid fa-bell-ring"></i><span>SOS Requests</span> <span class="badge bg-danger ms-1" id="pendSosBadge" style="font-size:0.65rem">0</span></a>
+        <a href="#" class="admin-menu-item" onclick="showTab('patients',this)"><i class="fa-solid fa-person-cane"></i><span>Elderly Patients</span></a>
+        <a href="#" class="admin-menu-item" onclick="showTab('users',this)"><i class="fa-solid fa-users"></i><span>Users</span></a>
+        <a href="#" class="admin-menu-item" onclick="showTab('contacts',this)"><i class="fa-solid fa-envelope"></i><span>Messages</span></a>
+        <a href="#" class="admin-menu-item" onclick="showTab('add',this)"><i class="fa-solid fa-plus-circle"></i><span>Add Hospital</span></a>
+      </div>
+    </div>
+
+    <div class="col-md-10 admin-main">
+
+      <!-- HOSPITALS TAB -->
+      <div id="tab-hospitals" class="admin-tab">
+        <div class="admin-tab-head d-flex justify-content-between align-items-center mb-4">
+          <h4><i class="fa-solid fa-hospital me-2"></i>Manage Hospitals <span class="badge bg-primary ms-2" id="hospCountBadge">0</span></h4>
+        </div>
+        <div class="table-responsive">
+          <table class="table admin-table">
+            <thead>
+              <tr><th>Hospital</th><th>Location</th><th>Avail. Beds</th><th>ICU</th><th>O₂</th><th>Ventilators</th><th>Doctors</th><th>Ambulances</th><th>Updated</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="hospTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EMERGENCY TAB -->
+      <div id="tab-emergency" class="admin-tab d-none">
+        <div class="admin-tab-head mb-4"><h4><i class="fa-solid fa-bell-ring me-2 text-danger"></i>Emergency SOS Requests</h4></div>
+        <div id="emergencyList"></div>
+      </div>
+
+      <!-- PATIENTS TAB -->
+      <div id="tab-patients" class="admin-tab d-none">
+        <div class="admin-tab-head mb-4"><h4><i class="fa-solid fa-person-cane me-2 text-primary"></i>Elderly Patients Overview</h4></div>
+        <div class="table-responsive">
+          <table class="table admin-table">
+            <thead><tr><th>Name</th><th>Age</th><th>Village</th><th>Disease</th><th>Medicine</th><th>Checkup Date</th><th>Contact</th><th>Status</th></tr></thead>
+            <tbody id="patientsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USERS TAB -->
+      <div id="tab-users" class="admin-tab d-none">
+        <div class="admin-tab-head mb-4"><h4><i class="fa-solid fa-users me-2 text-success"></i>All Users <span class="badge bg-primary ms-2" id="userCountBadge">0</span></h4></div>
+        <div class="table-responsive">
+          <table class="table admin-table">
+            <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Phone</th><th>District</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CONTACTS TAB -->
+      <div id="tab-contacts" class="admin-tab d-none">
+        <div class="admin-tab-head mb-4"><h4><i class="fa-solid fa-envelope me-2 text-warning"></i>Contact Form Messages <span class="badge bg-warning text-dark ms-2" id="contactCountBadge">0</span></h4></div>
+        <div id="contactsList"></div>
+      </div>
+
+      <!-- ADD HOSPITAL TAB -->
+      <div id="tab-add" class="admin-tab d-none">
+        <div class="admin-tab-head mb-4"><h4><i class="fa-solid fa-plus-circle me-2"></i>Add New Hospital (Telangana)</h4></div>
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="admin-form-card">
+              <form id="addHospForm">
+                <div class="row g-3">
+                  <div class="col-12"><label class="form-label">Hospital Name *</label><input type="text" class="form-control" id="newName" placeholder="e.g. Government Hospital, Adilabad" required></div>
+                  <div class="col-md-8"><label class="form-label">Location *</label><input type="text" class="form-control" id="newLoc" placeholder="e.g. Adilabad, Adilabad District" required></div>
+                  <div class="col-md-4"><label class="form-label">Contact *</label><input type="text" class="form-control" id="newContact" placeholder="e.g. 08732-222100"></div>
+                  <div class="col-12"><label class="form-label">Google Maps Link</label><input type="url" class="form-control" id="newMaps" placeholder="https://maps.google.com/?q=..."></div>
+                  <div class="col-12"><h6 class="text-primary mt-2">Bed Information</h6></div>
+                  <div class="col-6 col-md-3"><label class="form-label">General Beds</label><input type="number" class="form-control" id="nGeneral" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">ICU Beds</label><input type="number" class="form-control" id="nICU" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Emergency Beds</label><input type="number" class="form-control" id="nEmergBeds" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Maternity Beds</label><input type="number" class="form-control" id="nMaternity" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Pediatric Beds</label><input type="number" class="form-control" id="nPediatric" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Isolation Beds</label><input type="number" class="form-control" id="nIsolation" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Occupied</label><input type="number" class="form-control" id="nOccupied" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Available</label><input type="number" class="form-control" id="nAvailable" value="0" min="0"></div>
+                  <div class="col-12"><h6 class="text-success mt-2">Key Equipment</h6></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Oxygen Cylinders</label><input type="number" class="form-control" id="nOxygen" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Ventilators</label><input type="number" class="form-control" id="nVent" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Monitors</label><input type="number" class="form-control" id="nMon" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Dialysis Machines</label><input type="number" class="form-control" id="nDial" value="0" min="0"></div>
+                  <div class="col-12"><h6 class="text-warning mt-2">Staff & Emergency</h6></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Doctors</label><input type="number" class="form-control" id="nDoc" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Nurses</label><input type="number" class="form-control" id="nNurse" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Ambulances</label><input type="number" class="form-control" id="nAmb" value="0" min="0"></div>
+                  <div class="col-6 col-md-3"><label class="form-label">Blood Units</label><input type="number" class="form-control" id="nBlood" value="0" min="0"></div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-admin-primary w-100"><i class="fa-solid fa-plus me-2"></i>Add Hospital</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-pen me-2"></i>Update Hospital Resources</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <strong id="editHospName" class="text-primary d-block mb-3"></strong>
+        <div class="row g-3">
+          <div class="col-12"><h6 class="text-primary">Beds</h6></div>
+          <div class="col-6 col-md-3"><label class="form-label">General Beds</label><input type="number" class="form-control" id="eGeneral" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">ICU Beds</label><input type="number" class="form-control" id="eICU" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">Available Beds</label><input type="number" class="form-control" id="eAvail" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">Occupied Beds</label><input type="number" class="form-control" id="eOcc" min="0"></div>
+          <div class="col-12"><h6 class="text-success mt-2">Equipment</h6></div>
+          <div class="col-6 col-md-3"><label class="form-label">Oxygen Cylinders</label><input type="number" class="form-control" id="eOxy" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">Ventilators</label><input type="number" class="form-control" id="eVent" min="0"></div>
+          <div class="col-12"><h6 class="text-warning mt-2">Staff & Emergency</h6></div>
+          <div class="col-6 col-md-3"><label class="form-label">Doctors</label><input type="number" class="form-control" id="eDoc" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">Nurses</label><input type="number" class="form-control" id="eNurse" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">Ambulances</label><input type="number" class="form-control" id="eAmb" min="0"></div>
+          <div class="col-6 col-md-3"><label class="form-label">Blood Units</label><input type="number" class="form-control" id="eBlood" min="0"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-admin-primary" onclick="saveEdit()"><i class="fa-solid fa-floppy-disk me-2"></i>Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script><script src="js/main.js"></script>
+<script>
+if(!sessionStorage.getItem('govhealth_role')||sessionStorage.getItem('govhealth_role')!=='admin') window.location.href='login.html';
+let editModal;
+document.addEventListener('DOMContentLoaded',()=>{
+  editModal=new bootstrap.Modal(document.getElementById('editModal'));
+  renderHospTable();
+  renderEmergencyList();
+  document.getElementById('addHospForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    addHospital({
+      name:document.getElementById('newName').value,location:document.getElementById('newLoc').value,
+      contact:document.getElementById('newContact').value||'N/A',maps:document.getElementById('newMaps').value||'#',
+      beds:{general:+document.getElementById('nGeneral').value,icu:+document.getElementById('nICU').value,emergency:+document.getElementById('nEmergBeds').value,maternity:+document.getElementById('nMaternity').value,pediatric:+document.getElementById('nPediatric').value,isolation:+document.getElementById('nIsolation').value,occupied:+document.getElementById('nOccupied').value,available:+document.getElementById('nAvailable').value},
+      equipment:{oxygen:+document.getElementById('nOxygen').value,ventilators:+document.getElementById('nVent').value,monitors:+document.getElementById('nMon').value,wheelchairs:0,stretchers:0,dialysis:+document.getElementById('nDial').value,xray:0,ctscan:0,mri:0,ecg:0},
+      staff:{doctors:+document.getElementById('nDoc').value,nurses:+document.getElementById('nNurse').value,surgeons:0,emergencyStaff:0,labTech:0,pharmacist:0,wardBoys:0},
+      emergency:{ambulances:+document.getElementById('nAmb').value,bloodUnits:+document.getElementById('nBlood').value,oxygenPlant:false,operationTheaters:0,traumaCenter:false,open247:false}
+    });
+    this.reset();showToast('Hospital added!');showTab('hospitals',document.querySelector('.admin-menu-item'));renderHospTable();
+  });
+});
+
+function renderHospTable(){
+  const h=getHospitals();
+  document.getElementById('hospCountBadge').textContent=h.length+' Hospitals';
+  document.getElementById('hospTableBody').innerHTML=h.map(h=>`<tr>
+    <td><strong>${h.name.split(',')[0]}</strong></td>
+    <td><small>${h.location}</small></td>
+    <td><span class="res-badge ${h.beds.available>10?'rb-ok':'rb-low'}">${h.beds.available}</span></td>
+    <td><span class="res-badge ${h.beds.icu>3?'rb-ok':'rb-low'}">${h.beds.icu}</span></td>
+    <td><span class="res-badge ${h.equipment.oxygen>10?'rb-ok':'rb-low'}">${h.equipment.oxygen}</span></td>
+    <td><span class="res-badge ${h.equipment.ventilators>3?'rb-ok':'rb-low'}">${h.equipment.ventilators}</span></td>
+    <td>${h.staff.doctors}</td>
+    <td><span class="res-badge ${h.emergency.ambulances>1?'rb-ok':'rb-low'}">${h.emergency.ambulances}</span></td>
+    <td><small>${h.updated}</small></td>
+    <td>
+      <button class="btn btn-sm btn-edit me-1" onclick="openEdit(${h.id})"><i class="fa-solid fa-pen"></i></button>
+      <button class="btn btn-sm btn-delete" onclick="delHosp(${h.id})"><i class="fa-solid fa-trash"></i></button>
+    </td>
+  </tr>`).join('');
+}
+function renderEmergencyList(){
+  const reqs=getEmergencyRequests();
+  const pend = reqs.filter(r=>r.status==='Pending').length;
+  const badge = document.getElementById('pendSosBadge');
+  if(badge){ badge.textContent=pend; badge.style.display=pend>0?'':'none'; }
+  const el=document.getElementById('emergencyList');
+  if(!reqs.length){el.innerHTML='<div class="text-center py-5 text-muted"><i class="fa-solid fa-inbox fa-3x mb-3"></i><p>No emergency requests.</p></div>';return;}
+  el.innerHTML=reqs.map(r=>`<div class="emer-req-card ${r.status==='Completed'?'req-done':'req-pending'}">
+    <div class="req-header"><div><strong>${r.name}</strong>, Age: ${r.age}<span class="req-status ${r.status==='Completed'?'status-done':'status-pend'}">${r.status}</span></div><small>${r.timestamp}</small></div>
+    <div class="req-body mt-2">
+      <div><i class="fa-solid fa-phone me-1 text-muted"></i>${r.phone}</div>
+      <div><i class="fa-solid fa-location-dot me-1 text-muted"></i>${r.location}</div>
+      <div class="mt-1"><i class="fa-solid fa-notes-medical me-1 text-muted"></i>${r.description}</div>
+    </div>
+    ${r.status==='Pending'?`<button class="btn btn-sm btn-mark-done mt-2" onclick="markDone(${r.id})"><i class="fa-solid fa-check me-1"></i>Mark Completed</button>`:''}
+  </div>`).join('');
+}
+function renderPatientsTable(){
+  const pts=getPatients();
+  document.getElementById('patientsTableBody').innerHTML=pts.length?pts.map(p=>`<tr>
+    <td><strong>${p.name}</strong></td><td>${p.age}</td><td>${p.village}</td><td>${p.disease}</td>
+    <td><small>${p.medicine}</small></td><td>${p.checkupDate}</td><td>${p.contact}</td>
+    <td><span class="res-badge ${p.medStatus==='Active'?'rb-ok':'rb-low'}">${p.medStatus}</span></td>
+  </tr>`).join(''):'<tr><td colspan="8" class="text-center text-muted py-4">No elderly patients registered yet.</td></tr>';
+}
+function renderUsersTable(){
+  const users = getUsers();
+  document.getElementById('userCountBadge').textContent = users.length;
+  const roleColors = {admin:'badge bg-danger',hw:'badge bg-warning text-dark',patient:'badge bg-success'};
+  document.getElementById('usersTableBody').innerHTML = users.length ? users.map(u=>`<tr>
+    <td><strong>${u.name||'—'}</strong></td>
+    <td><code style="font-size:0.78rem">${u.username}</code></td>
+    <td><span class="${roleColors[u.role]||'badge bg-secondary'}" style="font-size:0.72rem">${u.role}</span></td>
+    <td>${u.phone||'—'}</td><td>${u.district||'—'}</td>
+    <td><small>${u.createdAt||'—'}</small></td>
+    <td><span class="res-badge ${u.active===false?'rb-low':'rb-ok'}">${u.active===false?'Inactive':'Active'}</span></td>
+    <td><button class="btn btn-sm btn-edit" onclick="toggleUserActive('${u.username}')"><i class="fa-solid fa-toggle-on"></i></button></td>
+  </tr>`).join('') : '<tr><td colspan="8" class="text-center text-muted py-4">No users yet.</td></tr>';
+}
+function toggleUserActive(username){
+  const users=getUsers(),i=users.findIndex(u=>u.username===username);
+  if(i>-1){users[i].active=users[i].active===false?true:false;localStorage.setItem('govhealth_users',JSON.stringify(users));renderUsersTable();showToast('User status updated!');}
+}
+function renderContacts(){
+  const contacts=JSON.parse(localStorage.getItem('govhealth_contacts')||'[]');
+  const badge=document.getElementById('contactCountBadge');
+  if(badge) badge.textContent=contacts.length;
+  const el=document.getElementById('contactsList');
+  if(!contacts.length){el.innerHTML='<div class="text-center py-5 text-muted"><i class="fa-solid fa-inbox fa-3x mb-3 d-block"></i><p>No messages yet.</p></div>';return;}
+  el.innerHTML=contacts.map((c,i)=>`<div class="emer-req-card ${!c.read?'req-pending':''} mb-3">
+    <div class="req-header"><div><strong>${c.name}</strong>&nbsp;<span class="badge bg-secondary" style="font-size:0.7rem">${c.subject}</span>${!c.read?'<span class="badge bg-danger ms-1" style="font-size:0.65rem">New</span>':''}</div><small class="text-muted">${c.submittedAt}</small></div>
+    <div class="req-body mt-2"><div><i class="fa-solid fa-envelope me-1 text-muted"></i>${c.email}</div><div class="mt-1"><i class="fa-solid fa-message me-1 text-muted"></i>${c.message}</div></div>
+    ${!c.read?'<button class="btn btn-sm btn-success mt-2" onclick="markContactRead('+i+')"><i class="fa-solid fa-check me-1"></i>Mark Read</button>':''}
+  </div>`).join('');
+}
+function markContactRead(i){
+  const c=JSON.parse(localStorage.getItem('govhealth_contacts')||'[]');
+  if(c[i]) c[i].read=true;
+  localStorage.setItem('govhealth_contacts',JSON.stringify(c));
+  renderContacts();showToast('Marked as read!');
+}
+function openEdit(id){
+  const h=getHospitals().find(x=>x.id==id); if(!h)return;
+  document.getElementById('editId').value=id;
+  document.getElementById('editHospName').textContent=h.name;
+  document.getElementById('eGeneral').value=h.beds.general;
+  document.getElementById('eICU').value=h.beds.icu;
+  document.getElementById('eAvail').value=h.beds.available;
+  document.getElementById('eOcc').value=h.beds.occupied;
+  document.getElementById('eOxy').value=h.equipment.oxygen;
+  document.getElementById('eVent').value=h.equipment.ventilators;
+  document.getElementById('eDoc').value=h.staff.doctors;
+  document.getElementById('eNurse').value=h.staff.nurses;
+  document.getElementById('eAmb').value=h.emergency.ambulances;
+  document.getElementById('eBlood').value=h.emergency.bloodUnits;
+  editModal.show();
+}
+function saveEdit(){
+  const id=document.getElementById('editId').value;
+  const h=getHospitals().find(x=>x.id==id);
+  updateHospital(id,{
+    beds:{...h.beds,general:+document.getElementById('eGeneral').value,icu:+document.getElementById('eICU').value,available:+document.getElementById('eAvail').value,occupied:+document.getElementById('eOcc').value},
+    equipment:{...h.equipment,oxygen:+document.getElementById('eOxy').value,ventilators:+document.getElementById('eVent').value},
+    staff:{...h.staff,doctors:+document.getElementById('eDoc').value,nurses:+document.getElementById('eNurse').value},
+    emergency:{...h.emergency,ambulances:+document.getElementById('eAmb').value,bloodUnits:+document.getElementById('eBlood').value}
+  });
+  editModal.hide();renderHospTable();showToast('Hospital updated!');
+}
+function delHosp(id){if(confirm('Delete this hospital?')){deleteHospital(id);renderHospTable();showToast('Deleted.','error');}}
+function markDone(id){markRequestDone(id);renderEmergencyList();showToast('Marked as completed!');}
+function showTab(tab,el){
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.add('d-none'));
+  document.querySelectorAll('.admin-menu-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.remove('d-none');
+  if(el)el.classList.add('active');
+  if(tab==='emergency')renderEmergencyList();
+  if(tab==='hospitals')renderHospTable();
+  if(tab==='patients')renderPatientsTable();
+  if(tab==='users')renderUsersTable();
+  if(tab==='contacts')renderContacts();
+  return false;
+}
+function adminLogout(){sessionStorage.clear();window.location.href='login.html';}
+</script>
+</body>
+</html>

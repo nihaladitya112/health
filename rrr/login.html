@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Sign Up – GovHealth Monitor Telangana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .auth-tabs { display:flex; gap:0; border-radius:12px; overflow:hidden; border:2px solid var(--border); margin-bottom:24px; }
+    .auth-tab-btn { flex:1; padding:10px; background:var(--surface2); border:none; font-weight:700; font-size:0.88rem; color:var(--text-secondary); cursor:pointer; transition:all 0.2s; }
+    .auth-tab-btn.active { background:var(--primary); color:#fff; }
+
+    .role-selector { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
+    .role-btn { border:2px solid var(--border); border-radius:12px; padding:12px 8px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface2); color:var(--text); }
+    .role-btn i { font-size:1.4rem; display:block; margin-bottom:6px; }
+    .role-btn span { font-size:0.75rem; font-weight:700; display:block; }
+    .role-btn:hover { border-color:var(--primary); color:var(--primary); background:var(--surface); }
+    .role-btn.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+
+    /* Signup only for HW + Patient */
+    .signup-role-selector { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:20px; }
+    .signup-role-btn { border:2px solid var(--border); border-radius:12px; padding:14px 8px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface2); color:var(--text); }
+    .signup-role-btn i { font-size:1.6rem; display:block; margin-bottom:8px; }
+    .signup-role-btn span { font-size:0.82rem; font-weight:700; display:block; }
+    .signup-role-btn:hover { border-color:var(--primary); color:var(--primary); }
+    .signup-role-btn.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .signup-role-btn.hw-btn.active   { background:#7B1FA2; border-color:#7B1FA2; }
+    .signup-role-btn.pat-btn.active  { background:#2E7D32; border-color:#2E7D32; }
+
+    .btn-login-submit { background:var(--primary);color:#fff;border:none;padding:13px;border-radius:10px;font-weight:700;font-size:1rem;transition:all 0.2s;width:100%; }
+    .btn-login-submit:hover { background:var(--primary-dark);color:#fff; }
+    .btn-signup-submit { background:#2E7D32;color:#fff;border:none;padding:13px;border-radius:10px;font-weight:700;font-size:1rem;transition:all 0.2s;width:100%; }
+    .btn-signup-submit.hw-color { background:#7B1FA2; }
+    .btn-signup-submit.hw-color:hover { background:#6A1B9A; color:#fff; }
+    .btn-signup-submit:hover { background:#1B5E20;color:#fff; }
+
+    .demo-info { background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:0.8rem;margin-top:16px; }
+    .demo-title { font-weight:700;color:var(--text-muted);text-transform:uppercase;font-size:0.7rem;letter-spacing:1px;margin-bottom:6px; }
+    .demo-row { display:flex;justify-content:space-between;padding:3px 0; }
+    .demo-row code { background:rgba(21,101,192,0.1);color:var(--primary);padding:1px 6px;border-radius:4px;font-size:0.78rem; }
+
+    .strength-bar { height:4px; border-radius:4px; transition:all 0.3s; margin-top:6px; }
+    .strength-weak   { background:#E53935; width:33%; }
+    .strength-medium { background:#FF9800; width:66%; }
+    .strength-strong { background:#43A047; width:100%; }
+
+    .pass-hint { font-size:0.72rem; margin-top:3px; }
+    .pass-hint.weak   { color:#E53935; }
+    .pass-hint.medium { color:#FF9800; }
+    .pass-hint.strong { color:#43A047; }
+
+    .login-card { max-width:480px; }
+  </style>
+</head>
+<body class="login-body">
+<div class="login-page-wrap">
+  <div class="login-card">
+
+    <!-- LOGO -->
+    <div class="login-logo mb-2"><i class="fa-solid fa-hospital-user"></i></div>
+    <h4 class="login-title">GovHealth Monitor</h4>
+    <p class="login-sub mb-4">తెలంగాణ ఆరోగ్య పర్యవేక్షణ</p>
+
+    <!-- LOGIN / SIGNUP TABS -->
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">
+        <i class="fa-solid fa-right-to-bracket me-2"></i>Login
+      </button>
+      <button class="auth-tab-btn" id="tabSignup" onclick="switchAuthTab('signup')">
+        <i class="fa-solid fa-user-plus me-2"></i>Sign Up
+      </button>
+    </div>
+
+    <!-- ════════════ LOGIN PANEL ════════════ -->
+    <div id="loginPanel">
+      <!-- Role selector -->
+      <div class="role-selector">
+        <div class="role-btn active" onclick="selectLoginRole('admin',this)">
+          <i class="fa-solid fa-user-shield"></i><span>Admin</span>
+        </div>
+        <div class="role-btn" onclick="selectLoginRole('hw',this)">
+          <i class="fa-solid fa-user-nurse"></i><span>Health Worker</span>
+        </div>
+        <div class="role-btn" onclick="selectLoginRole('patient',this)">
+          <i class="fa-solid fa-user"></i><span>Patient / Family</span>
+        </div>
+      </div>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="mb-3">
+          <label class="form-label fw-600">Username</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+            <input type="text" class="form-control" id="loginUser" placeholder="Enter username" required autocomplete="username">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-600">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" class="form-control" id="loginPass" placeholder="Enter password" required autocomplete="current-password">
+            <button class="btn btn-outline-secondary" type="button" onclick="toggleVis('loginPass','loginEye')">
+              <i class="fa-solid fa-eye" id="loginEye"></i>
+            </button>
+          </div>
+        </div>
+        <div id="loginError" class="alert alert-danger d-none py-2 mb-3">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i><span id="loginErrMsg">Invalid credentials</span>
+        </div>
+        <button type="submit" class="btn-login-submit">
+          <i class="fa-solid fa-right-to-bracket me-2"></i>Login
+        </button>
+      </form>
+
+      <!-- Demo credentials -->
+      <div class="demo-info">
+        <div class="demo-title">Demo Credentials</div>
+        <div class="demo-row"><span>Admin:</span><code>admin / admin123</code></div>
+        <div class="demo-row"><span>Health Worker:</span><code>ravi.hw / hw123</code></div>
+        <div class="demo-row"><span>Patient:</span><code>lakshmi / pat123</code></div>
+        <div class="demo-row text-muted" style="font-size:0.73rem;margin-top:4px;">
+          <span>Or create a new account using Sign Up →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ SIGNUP PANEL ════════════ -->
+    <div id="signupPanel" class="d-none">
+
+      <p class="text-muted text-center mb-3" style="font-size:0.85rem;">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        Admins are pre-configured. Health Workers & Patients can register below.
+      </p>
+
+      <!-- Signup Role -->
+      <div class="signup-role-selector">
+        <div class="signup-role-btn hw-btn active" onclick="selectSignupRole('hw',this)">
+          <i class="fa-solid fa-user-nurse"></i>
+          <span>Health Worker</span>
+          <small style="font-size:0.68rem;display:block;opacity:0.8;margin-top:4px;">Register as field worker</small>
+        </div>
+        <div class="signup-role-btn pat-btn" onclick="selectSignupRole('patient',this)">
+          <i class="fa-solid fa-user"></i>
+          <span>Patient / Family</span>
+          <small style="font-size:0.68rem;display:block;opacity:0.8;margin-top:4px;">Register to view reminders</small>
+        </div>
+      </div>
+
+      <form id="signupForm" autocomplete="off">
+        <div class="row g-2">
+          <div class="col-12">
+            <label class="form-label fw-600">Full Name *</label>
+            <input type="text" class="form-control" id="suName" placeholder="e.g. Ravi Kumar" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-600">Username * <small class="text-muted">(used to login)</small></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
+              <input type="text" class="form-control" id="suUser" placeholder="e.g. ravi.hw2" required autocomplete="off">
+            </div>
+            <div id="suUserFeedback" class="pass-hint"></div>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-600">Phone Number *</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+              <input type="tel" class="form-control" id="suPhone" placeholder="10-digit mobile number" required>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-600">Village / Area</label>
+            <input type="text" class="form-control" id="suVillage" placeholder="Village or area">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-600">District *</label>
+            <select class="form-select" id="suDistrict" required>
+              <option value="">Select District</option>
+              <option>Hyderabad</option><option>Warangal</option><option>Karimnagar</option>
+              <option>Nizamabad</option><option>Khammam</option><option>Nalgonda</option>
+              <option>Mahbubnagar</option><option>Medak</option><option>Adilabad</option>
+              <option>Rangareddy</option><option>Sangareddy</option><option>Siddipet</option>
+              <option>Yadadri Bhuvanagiri</option><option>Mancherial</option><option>Jayashankar Bhupalpally</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <!-- HW-specific: optional employee ID -->
+          <div class="col-12" id="suHWFields">
+            <label class="form-label fw-600">Employee / Worker ID <small class="text-muted">(optional)</small></label>
+            <input type="text" class="form-control" id="suEmpID" placeholder="e.g. HW-2025-001">
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-600">Password *</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" class="form-control" id="suPass" placeholder="Create a password (min 6 chars)" required autocomplete="new-password" oninput="checkStrength(this.value)">
+              <button class="btn btn-outline-secondary" type="button" onclick="toggleVis('suPass','suPassEye')">
+                <i class="fa-solid fa-eye" id="suPassEye"></i>
+              </button>
+            </div>
+            <div class="strength-bar d-none" id="strengthBar"></div>
+            <div class="pass-hint" id="strengthHint"></div>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-600">Confirm Password *</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+              <input type="password" class="form-control" id="suPassConf" placeholder="Re-enter password" required autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+
+        <div id="signupError" class="alert alert-danger d-none py-2 mt-3 mb-2">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i><span id="signupErrMsg"></span>
+        </div>
+        <div id="signupSuccess" class="alert alert-success d-none py-2 mt-3 mb-2">
+          <i class="fa-solid fa-check-circle me-2"></i><span id="signupOkMsg"></span>
+        </div>
+
+        <button type="submit" class="btn-signup-submit hw-color mt-3" id="suSubmitBtn">
+          <i class="fa-solid fa-user-plus me-2"></i>Create Account
+        </button>
+      </form>
+    </div>
+
+    <div class="text-center mt-3">
+      <a href="index.html" class="back-home-link">
+        <i class="fa-solid fa-arrow-left me-1"></i>Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+<script>
+let loginRole  = 'admin';
+let signupRole = 'hw';
+
+// ── TAB SWITCH ────────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.getElementById('loginPanel').classList.toggle('d-none',  tab !== 'login');
+  document.getElementById('signupPanel').classList.toggle('d-none', tab !== 'signup');
+  document.getElementById('tabLogin').classList.toggle('active',  tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+}
+
+// ── ROLE SELECTORS ────────────────────────────────────────────
+function selectLoginRole(role, el) {
+  loginRole = role;
+  document.querySelectorAll('#loginPanel .role-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('loginError').classList.add('d-none');
+}
+function selectSignupRole(role, el) {
+  signupRole = role;
+  document.querySelectorAll('.signup-role-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  // Toggle HW-specific field
+  document.getElementById('suHWFields').style.display = role === 'hw' ? '' : 'none';
+  // Change button color
+  const btn = document.getElementById('suSubmitBtn');
+  btn.className = role === 'hw' ? 'btn-signup-submit hw-color mt-3' : 'btn-signup-submit mt-3';
+}
+
+// ── UTILITY ───────────────────────────────────────────────────
+function toggleVis(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const ico = document.getElementById(iconId);
+  if (inp.type === 'password') { inp.type = 'text';     ico.className = 'fa-solid fa-eye-slash'; }
+  else                          { inp.type = 'password'; ico.className = 'fa-solid fa-eye'; }
+}
+function checkStrength(val) {
+  const bar = document.getElementById('strengthBar');
+  const hint = document.getElementById('strengthHint');
+  bar.classList.remove('d-none');
+  if (val.length < 4) {
+    bar.className = 'strength-bar strength-weak';
+    hint.className = 'pass-hint weak'; hint.textContent = 'Too weak';
+  } else if (val.length < 8 || !/[0-9]/.test(val)) {
+    bar.className = 'strength-bar strength-medium';
+    hint.className = 'pass-hint medium'; hint.textContent = 'Medium — add numbers for stronger';
+  } else {
+    bar.className = 'strength-bar strength-strong';
+    hint.className = 'pass-hint strong'; hint.textContent = 'Strong password ✓';
+  }
+}
+
+// Check username availability live
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('suUser').addEventListener('input', function() {
+    const val = this.value.trim();
+    const fb = document.getElementById('suUserFeedback');
+    if (!val) { fb.textContent = ''; return; }
+    if (val.length < 3) { fb.className = 'pass-hint weak'; fb.textContent = 'Too short (min 3 chars)'; return; }
+    if (!/^[a-zA-Z0-9._]+$/.test(val)) { fb.className = 'pass-hint weak'; fb.textContent = 'Only letters, numbers, dots and underscores'; return; }
+    const taken = getUsers().find(u => u.username === val);
+    if (taken) { fb.className = 'pass-hint weak'; fb.textContent = '✕ Username already taken'; }
+    else        { fb.className = 'pass-hint strong'; fb.textContent = '✓ Username available'; }
+  });
+});
+
+// ── LOGIN SUBMIT ──────────────────────────────────────────────
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl    = document.getElementById('loginError');
+  const errMsg   = document.getElementById('loginErrMsg');
+
+  const user = authLogin(username, password, loginRole);
+  if (user) {
+    setSession(user);
+    if (loginRole === 'admin')   window.location.href = 'admin-dashboard.html';
+    else if (loginRole === 'hw') window.location.href = 'hw-dashboard.html';
+    else                          window.location.href = 'patient-dashboard.html';
+  } else {
+    errEl.classList.remove('d-none');
+    errMsg.textContent = 'Invalid username or password. Please check and try again.';
+  }
+});
+
+// ── SIGNUP SUBMIT ─────────────────────────────────────────────
+document.getElementById('signupForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const errEl    = document.getElementById('signupError');
+  const errMsg   = document.getElementById('signupErrMsg');
+  const okEl     = document.getElementById('signupSuccess');
+  const okMsg    = document.getElementById('signupOkMsg');
+  errEl.classList.add('d-none');
+  okEl.classList.add('d-none');
+
+  const name     = document.getElementById('suName').value.trim();
+  const username = document.getElementById('suUser').value.trim();
+  const phone    = document.getElementById('suPhone').value.trim();
+  const village  = document.getElementById('suVillage').value.trim();
+  const district = document.getElementById('suDistrict').value;
+  const pass     = document.getElementById('suPass').value;
+  const passConf = document.getElementById('suPassConf').value;
+
+  // Validations
+  if (pass !== passConf) {
+    errEl.classList.remove('d-none'); errMsg.textContent = 'Passwords do not match.'; return;
+  }
+  if (pass.length < 6) {
+    errEl.classList.remove('d-none'); errMsg.textContent = 'Password must be at least 6 characters.'; return;
+  }
+  if (!/^[0-9]{10}$/.test(phone)) {
+    errEl.classList.remove('d-none'); errMsg.textContent = 'Phone must be a 10-digit number.'; return;
+  }
+
+  const result = authSignup({ role: signupRole, name, username, password: pass, phone, village, district });
+  if (result.ok) {
+    okEl.classList.remove('d-none');
+    okMsg.textContent = `Account created! Username: ${username}. You can now login.`;
+    this.reset();
+    document.getElementById('strengthBar').classList.add('d-none');
+    document.getElementById('strengthHint').textContent = '';
+    document.getElementById('suUserFeedback').textContent = '';
+    // Auto-switch to login after 2s
+    setTimeout(() => {
+      switchAuthTab('login');
+      selectLoginRole(signupRole, document.querySelector(signupRole === 'hw' ? '#loginPanel .role-btn:nth-child(2)' : '#loginPanel .role-btn:nth-child(3)'));
+      document.getElementById('loginUser').value = username;
+    }, 2000);
+  } else {
+    errEl.classList.remove('d-none'); errMsg.textContent = result.msg;
+  }
+});
+</script>
+</body>
+</html>
+

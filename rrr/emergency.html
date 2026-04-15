@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emergency Assistance – GovHealth Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Monitor</div></div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="fa-solid fa-hospital me-1"></i>Hospitals</a></li>
+        <li class="nav-item"><a class="nav-link active" href="emergency.html"><i class="fa-solid fa-person-falling-burst me-1"></i>Emergency</a></li>
+        <li class="nav-item"><a class="nav-link" href="schemes.html"><i class="fa-solid fa-hand-holding-heart me-1"></i>Schemes</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        <li class="nav-item ms-lg-2" id="navAuthItem"><a class="nav-link btn-admin-nav" href="login.html"><i class="fa-solid fa-lock me-1"></i>Login</a></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-outline-light" id="darkModeToggle" onclick="toggleDark()"><i class="fa-solid fa-moon"></i></button></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-lang" id="langToggle" onclick="toggleLang()">తెలుగు</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- EMERGENCY HERO -->
+<div class="emer-hero">
+  <div class="container py-5 text-center">
+    <div class="emer-pulse-ring mb-4">
+      <button class="sos-main-btn" id="sosMainBtn" onclick="openSOSForm()">
+        <i class="fa-solid fa-bell-ring"></i>
+        <div class="sos-text">SOS</div>
+        <div class="sos-subtext">Tap for Help</div>
+      </button>
+    </div>
+    <h2 class="emer-title" data-en="Elderly Emergency Assistance" data-te="వృద్ధుల అత్యవసర సహాయం">Elderly Emergency Assistance</h2>
+    <p class="emer-desc" data-en="Press the SOS button above to send an emergency request. Your request will be received immediately by our team." data-te="మీ అత్యవసర అభ్యర్థన పంపడానికి పై SOS బటన్‌ను నొక్కండి.">
+      Press the SOS button above to send an emergency request. Your request will be received immediately by our team.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+      <a href="tel:108" class="btn btn-call-big"><i class="fa-solid fa-phone me-2"></i>Call 108 – Ambulance</a>
+      <a href="tel:104" class="btn btn-call-outline"><i class="fa-solid fa-phone me-2"></i>Call 104 – Health Helpline</a>
+    </div>
+  </div>
+</div>
+
+<!-- SOS FORM MODAL -->
+<div class="modal fade" id="sosModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content sos-modal-content">
+      <div class="modal-header sos-modal-header">
+        <h4 class="modal-title"><i class="fa-solid fa-siren-on me-2"></i>Emergency Request Form</h4>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="alert alert-danger mb-3">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>
+          <strong>For life-threatening emergencies, call 108 immediately!</strong>
+        </div>
+        <form id="sosForm">
+          <div class="mb-3">
+            <label class="form-label sos-label"><i class="fa-solid fa-user me-2"></i>Full Name *</label>
+            <input type="text" class="form-control sos-input" id="sosName" placeholder="Enter your full name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label sos-label"><i class="fa-solid fa-calendar me-2"></i>Age *</label>
+            <input type="number" class="form-control sos-input" id="sosAge" placeholder="Enter age" min="1" max="120" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label sos-label"><i class="fa-solid fa-phone me-2"></i>Phone Number *</label>
+            <input type="tel" class="form-control sos-input" id="sosPhone" placeholder="Enter mobile number" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label sos-label"><i class="fa-solid fa-location-dot me-2"></i>Your Location *</label>
+            <input type="text" class="form-control sos-input" id="sosLocation" placeholder="Village / Town / Address" required>
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-1" onclick="getLocation()">
+              <i class="fa-solid fa-crosshairs me-1"></i>Use My GPS Location
+            </button>
+          </div>
+          <div class="mb-3">
+            <label class="form-label sos-label"><i class="fa-solid fa-notes-medical me-2"></i>Emergency Description *</label>
+            <textarea class="form-control sos-input" id="sosDesc" rows="3" placeholder="Describe the emergency situation..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-sos-submit w-100">
+            <i class="fa-solid fa-paper-plane me-2"></i>Send Emergency Request
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MESSAGE -->
+<div class="modal fade" id="successModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content success-modal-content text-center p-4">
+      <div class="success-icon mb-3"><i class="fa-solid fa-check-circle"></i></div>
+      <h4>Request Sent Successfully!</h4>
+      <p>Your emergency request has been received. Our team will contact you shortly on the provided phone number.</p>
+      <p><strong>Meanwhile, call 108 for immediate ambulance assistance.</strong></p>
+      <a href="tel:108" class="btn btn-call-big mt-2"><i class="fa-solid fa-phone me-2"></i>Call 108 Now</a>
+      <button class="btn btn-outline-secondary mt-2" data-bs-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMERGENCY TIPS -->
+<section class="py-5">
+  <div class="container">
+    <h3 class="section-title text-center mb-4" data-en="Emergency Tips" data-te="అత్యవసర చిట్కాలు">Emergency Tips</h3>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="tip-card">
+          <div class="tip-icon"><i class="fa-solid fa-phone-volume"></i></div>
+          <h5>Keep Helplines Ready</h5>
+          <p>Save 108 (Ambulance) and 104 (Health) on your phone. These are free 24/7 emergency services.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="tip-card">
+          <div class="tip-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <h5>Know Your Location</h5>
+          <p>Always know your village/area name and nearest landmark. This helps emergency teams reach you faster.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="tip-card">
+          <div class="tip-icon"><i class="fa-solid fa-id-card"></i></div>
+          <h5>Keep Documents Handy</h5>
+          <p>Keep Aadhaar card and health cards ready. Government hospitals require these for free treatment.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPORTANT NUMBERS -->
+<section class="py-4 pb-5">
+  <div class="container">
+    <h3 class="section-title text-center mb-4">Important Emergency Numbers</h3>
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-3"><a href="tel:108" class="helpline-card"><div class="hl-num">108</div><div class="hl-label">Ambulance</div></a></div>
+      <div class="col-6 col-md-3"><a href="tel:104" class="helpline-card"><div class="hl-num">104</div><div class="hl-label">Health Helpline</div></a></div>
+      <div class="col-6 col-md-3"><a href="tel:14567" class="helpline-card"><div class="hl-num">14567</div><div class="hl-label">Senior Citizen</div></a></div>
+      <div class="col-6 col-md-3"><a href="tel:100" class="helpline-card"><div class="hl-num">100</div><div class="hl-label">Police</div></a></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer py-4">
+  <div class="container text-center footer-copy">
+    © 2025 GovHealth Monitor | Emergency: <strong>108</strong>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+let sosModal, successModal;
+document.addEventListener('DOMContentLoaded', () => {
+  sosModal = new bootstrap.Modal(document.getElementById('sosModal'));
+  successModal = new bootstrap.Modal(document.getElementById('successModal'));
+  document.getElementById('sosForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const req = {
+      name: document.getElementById('sosName').value,
+      age: document.getElementById('sosAge').value,
+      phone: document.getElementById('sosPhone').value,
+      location: document.getElementById('sosLocation').value,
+      description: document.getElementById('sosDesc').value
+    };
+    saveEmergencyRequest(req);
+    sosModal.hide();
+    document.getElementById('sosForm').reset();
+    successModal.show();
+  });
+});
+
+function openSOSForm() {
+  document.getElementById('sosMainBtn').classList.add('sos-clicked');
+  setTimeout(() => document.getElementById('sosMainBtn').classList.remove('sos-clicked'), 500);
+  sosModal.show();
+}
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      document.getElementById('sosLocation').value = `Lat: ${pos.coords.latitude.toFixed(4)}, Lng: ${pos.coords.longitude.toFixed(4)}`;
+    }, () => showToast('Could not get GPS location. Please enter manually.', 'error'));
+  } else {
+    showToast('GPS not supported. Please enter location manually.', 'error');
+  }
+}
+</script>
+</body>
+</html>

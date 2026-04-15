@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Dashboard – GovHealth Monitor Telangana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .pd-header { background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%); color: #fff; padding: 32px 0 28px; }
+    .pd-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content:center; font-size: 1.8rem; font-weight: 900; border: 3px solid rgba(255,255,255,0.4); flex-shrink: 0; }
+    .pd-name { font-family: 'Baloo 2', sans-serif; font-size: 1.5rem; font-weight: 800; }
+    .pd-sub  { opacity: 0.85; font-size: 0.88rem; }
+
+    /* Stat cards */
+    .pd-stat { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 18px 16px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow); }
+    .pd-stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; color: #fff; flex-shrink: 0; }
+    .pd-stat-val { font-family: 'Baloo 2', sans-serif; font-size: 1.6rem; font-weight: 800; line-height: 1; }
+    .pd-stat-lbl { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* Sections */
+    .pd-section { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
+    .pd-sec-head { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
+    .pd-sec-head h5 { margin: 0; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 1rem; }
+    .pd-sec-body { padding: 18px 20px; }
+
+    /* Medicine pill */
+    .med-pill { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+    .med-pill-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .med-name { font-weight: 700; font-size: 0.95rem; }
+    .med-info { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .med-status-badge { margin-left: auto; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 100px; flex-shrink: 0; }
+
+    /* Checkup countdown */
+    .checkup-card { border-radius: 14px; padding: 20px; text-align: center; }
+    .checkup-days { font-family: 'Baloo 2', sans-serif; font-size: 3rem; font-weight: 800; line-height: 1; }
+    .checkup-lbl { font-size: 0.85rem; margin-top: 4px; }
+
+    /* SOS history */
+    .sos-row { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; }
+    .sos-row.sos-pending { border-left: 4px solid #E53935; }
+    .sos-row.sos-done { border-left: 4px solid #43A047; opacity: 0.8; }
+    .sos-status-badge { font-size: 0.72rem; font-weight: 700; padding: 2px 10px; border-radius: 100px; }
+
+    /* Log table */
+    .log-mini { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
+    .log-mini th { background: var(--surface2); padding: 7px 10px; text-align: left; font-weight: 700; font-size: 0.76rem; border-bottom: 2px solid var(--border); }
+    .log-mini td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .log-mini tr:last-child td { border-bottom: none; }
+
+    .scheme-quick-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; text-decoration: none; color: var(--text); }
+    .scheme-quick-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+
+    .not-found-wrap { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav" style="background:#2E7D32">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Monitor</div><div class="brand-sub">Patient Portal</div></div>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <span class="admin-user-badge" id="patBadge"><i class="fa-solid fa-user me-1"></i>Patient</span>
+      <a href="index.html" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-globe"></i></a>
+      <button class="btn btn-sm btn-outline-light" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </div>
+</nav>
+
+<!-- PATIENT HEADER -->
+<div class="pd-header" id="patHeader">
+  <div class="container">
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      <div class="pd-avatar" id="patAvatar">?</div>
+      <div>
+        <div class="pd-name" id="patName">Loading...</div>
+        <div class="pd-sub" id="patSub"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOT FOUND STATE (hidden by default) -->
+<div class="not-found-wrap d-none" id="notFoundPanel">
+  <i class="fa-solid fa-user-xmark fa-4x text-muted mb-4"></i>
+  <h4 class="text-muted">No Patient Record Found</h4>
+  <p class="text-muted mb-4">Your account is not linked to an elderly patient record yet.<br>Please contact your Health Worker to register you in the system.</p>
+  <a href="index.html" class="btn btn-primary me-2"><i class="fa-solid fa-house me-1"></i>Home</a>
+  <a href="emergency.html" class="btn btn-danger"><i class="fa-solid fa-bell-ring me-1"></i>Emergency SOS</a>
+</div>
+
+<!-- DASHBOARD CONTENT -->
+<div class="container py-4" id="dashContent">
+
+  <!-- Stats row -->
+  <div class="row g-3 mb-4" id="patStats"></div>
+
+  <div class="row g-4">
+    <!-- Left column -->
+    <div class="col-lg-8">
+
+      <!-- TODAY'S MEDICINE -->
+      <div class="pd-section">
+        <div class="pd-sec-head">
+          <i class="fa-solid fa-pills text-warning fs-5"></i>
+          <h5>Today's Medicine Schedule</h5>
+        </div>
+        <div class="pd-sec-body" id="todayMedSection">
+          <p class="text-muted">Loading...</p>
+        </div>
+      </div>
+
+      <!-- MEDICINE LOG -->
+      <div class="pd-section">
+        <div class="pd-sec-head">
+          <i class="fa-solid fa-clock-rotate-left text-primary fs-5"></i>
+          <h5>Medicine History <span class="badge bg-secondary ms-1" id="medLogCount" style="font-size:0.72rem">0</span></h5>
+        </div>
+        <div class="pd-sec-body" id="medLogSection">
+          <p class="text-muted">No history yet.</p>
+        </div>
+      </div>
+
+      <!-- SOS HISTORY -->
+      <div class="pd-section">
+        <div class="pd-sec-head">
+          <i class="fa-solid fa-bell-ring text-danger fs-5"></i>
+          <h5>My SOS Requests <span class="badge bg-danger ms-1" id="sosCount" style="font-size:0.72rem">0</span></h5>
+        </div>
+        <div class="pd-sec-body" id="sosSection">
+          <p class="text-muted">No SOS requests submitted.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="col-lg-4">
+
+      <!-- NEXT CHECKUP -->
+      <div class="pd-section mb-4">
+        <div class="pd-sec-head">
+          <i class="fa-solid fa-calendar-check text-primary fs-5"></i>
+          <h5>Next Checkup</h5>
+        </div>
+        <div class="pd-sec-body" id="checkupSection">
+          <p class="text-muted">Not scheduled.</p>
+        </div>
+      </div>
+
+      <!-- HW INFO -->
+      <div class="pd-section mb-4">
+        <div class="pd-sec-head">
+          <i class="fa-solid fa-user-nurse" style="color:#7B1FA2"></i>
+          <h5 style="color:#7B1FA2">My Health Worker</h5>
+        </div>
+        <div class="pd-sec-body" id="hwInfoSection">
+          <p class="text-muted">No HW assigned.</p>
+        </div>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="pd-section">
+        <div class="pd-sec-head">
+          <i class="fa-solid fa-link text-success fs-5"></i>
+          <h5>Quick Links</h5>
+        </div>
+        <div class="pd-sec-body">
+          <a href="emergency.html" class="scheme-quick-card mb-2">
+            <i class="fa-solid fa-bell-ring text-danger fs-5"></i>
+            <div><div class="fw-600">Emergency SOS</div><small class="text-muted">Send an emergency request</small></div>
+          </a>
+          <a href="dashboard.html" class="scheme-quick-card mb-2">
+            <i class="fa-solid fa-hospital text-primary fs-5"></i>
+            <div><div class="fw-600">Find Hospitals</div><small class="text-muted">Check bed &amp; resource availability</small></div>
+          </a>
+          <a href="schemes.html" class="scheme-quick-card mb-2">
+            <i class="fa-solid fa-hand-holding-heart text-success fs-5"></i>
+            <div><div class="fw-600">Government Schemes</div><small class="text-muted">View healthcare benefits</small></div>
+          </a>
+          <a href="tel:108" class="scheme-quick-card">
+            <i class="fa-solid fa-phone-volume text-danger fs-5"></i>
+            <div><div class="fw-600">Call 108 — Ambulance</div><small class="text-muted">24/7 medical emergency</small></div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<a href="emergency.html" class="sos-float-btn"><i class="fa-solid fa-bell"></i><span>SOS</span></a>
+
+<footer class="site-footer py-4">
+  <div class="container text-center footer-copy">© 2025 GovHealth Monitor Telangana | Emergency: <strong>108</strong></div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+requireRole('patient');
+var patUser = getSession();
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('patBadge').innerHTML = '<i class="fa-solid fa-user me-1"></i>' + patUser.name;
+
+  // Find the patient record by username they used to log in
+  var patients = getPatients();
+  var myPatient = patients.find(function(p) {
+    return p.patUsername === patUser.username || p.id === patUser.linkedPatientId;
+  });
+
+  if (!myPatient) {
+    // Show not-found message, hide dashboard
+    document.getElementById('dashContent').classList.add('d-none');
+    document.getElementById('patHeader').style.background = 'linear-gradient(135deg,#37474F,#546E7A)';
+    document.getElementById('patAvatar').textContent = patUser.name.charAt(0).toUpperCase();
+    document.getElementById('patName').textContent = patUser.name;
+    document.getElementById('patSub').textContent = 'No patient record linked — contact your Health Worker';
+    document.getElementById('notFoundPanel').classList.remove('d-none');
+    return;
+  }
+
+  renderPatientDash(myPatient);
+});
+
+function renderPatientDash(p) {
+  document.getElementById('patAvatar').textContent = p.name.charAt(0).toUpperCase();
+  document.getElementById('patName').textContent = p.name;
+  document.getElementById('patSub').textContent = p.age + ' years • ' + p.disease + ' • ' + p.village + ', ' + p.district;
+
+  var adh = getAdh(p);
+  var meds = getMedicinesList(p);
+
+  // Stats
+  var dd = daysDiff(p.checkupDate);
+  var ml = p.medicineLog || [];
+  document.getElementById('patStats').innerHTML =
+    '<div class="col-6 col-md-3"><div class="pd-stat"><div class="pd-stat-icon" style="background:linear-gradient(135deg,#2E7D32,#43A047)"><i class="fa-solid fa-chart-line"></i></div><div><div class="pd-stat-val">' + adh.pct + '%</div><div class="pd-stat-lbl">Adherence</div></div></div></div>' +
+    '<div class="col-6 col-md-3"><div class="pd-stat"><div class="pd-stat-icon" style="background:linear-gradient(135deg,#FF6F00,#FFA000)"><i class="fa-solid fa-fire"></i></div><div><div class="pd-stat-val">' + (adh.streak || 0) + '</div><div class="pd-stat-lbl">Day Streak</div></div></div></div>' +
+    '<div class="col-6 col-md-3"><div class="pd-stat"><div class="pd-stat-icon" style="background:linear-gradient(135deg,#1565C0,#1976D2)"><i class="fa-solid fa-pills"></i></div><div><div class="pd-stat-val">' + meds.length + '</div><div class="pd-stat-lbl">Medicines</div></div></div></div>' +
+    '<div class="col-6 col-md-3"><div class="pd-stat"><div class="pd-stat-icon" style="background:linear-gradient(135deg,' + (p.checkupDate && dd < 0 ? '#C62828,#E53935' : '#00695C,#00897B') + ')"><i class="fa-solid fa-calendar-check"></i></div><div><div class="pd-stat-val">' + (p.checkupDate ? (dd < 0 ? 'Overdue' : dd + 'd') : '–') + '</div><div class="pd-stat-lbl">Until Checkup</div></div></div></div>';
+
+  // Today's medicine
+  var todayHtml = '';
+  if (meds.length === 0) {
+    todayHtml = '<p class="text-muted mb-0"><i class="fa-solid fa-info-circle me-1"></i>No medicines scheduled. Contact your Health Worker.</p>';
+  } else {
+    meds.forEach(function(m, idx) {
+      var status = getTodayMedStatusForDrug(p, idx);
+      var sbg = status === 'Taken' ? '#E8F5E9' : status === 'Missed' || status === 'Auto-Missed' ? '#FFEBEE' : '#FFF3E0';
+      var scol = status === 'Taken' ? '#2E7D32' : status === 'Missed' || status === 'Auto-Missed' ? '#C62828' : '#E65100';
+      var stxt = status || 'Not logged yet';
+      var icon = status === 'Taken' ? '✅' : status === 'Missed' ? '❌' : status === 'Auto-Missed' ? '🤖' : '⏳';
+      todayHtml += '<div class="med-pill">' +
+        '<div class="med-pill-icon" style="background:linear-gradient(135deg,#7B1FA2,#9C27B0)"><i class="fa-solid fa-capsules" style="color:#fff"></i></div>' +
+        '<div class="flex-grow-1">' +
+          '<div class="med-name">' + m.name + '</div>' +
+          '<div class="med-info">' + m.freq + ' &nbsp;|&nbsp; Reminder at ' + m.time + (m.notes ? ' &nbsp;|&nbsp; ' + m.notes : '') + '</div>' +
+        '</div>' +
+        '<span class="med-status-badge" style="background:' + sbg + ';color:' + scol + '">' + icon + ' ' + stxt + '</span>' +
+      '</div>';
+    });
+  }
+  document.getElementById('todayMedSection').innerHTML = todayHtml;
+
+  // Medicine log
+  var logHtml = '';
+  if (ml.length === 0) {
+    logHtml = '<p class="text-muted mb-0">No medicine logs yet.</p>';
+  } else {
+    document.getElementById('medLogCount').textContent = ml.length;
+    logHtml = '<div class="table-responsive"><table class="log-mini"><thead><tr><th>Date</th><th>Medicine</th><th>Status</th><th>By</th></tr></thead><tbody>';
+    ml.slice(0, 20).forEach(function(l) {
+      var mn = l.medicineName || (meds[0] ? meds[0].name : p.medicine || '—');
+      var sc = l.status === 'Taken' ? 'badge bg-success' : l.status === 'Auto-Missed' ? 'badge bg-secondary' : 'badge bg-danger';
+      var si = l.status === 'Taken' ? '✅' : l.status === 'Auto-Missed' ? '🤖' : '❌';
+      logHtml += '<tr><td>' + l.date + '</td><td>' + mn + '</td><td><span class="' + sc + '" style="font-size:0.72rem">' + si + ' ' + l.status + '</span></td><td>' + (l.by || 'Patient') + '</td></tr>';
+    });
+    logHtml += '</tbody></table></div>';
+  }
+  document.getElementById('medLogSection').innerHTML = logHtml;
+
+  // Checkup section
+  var checkHtml = '';
+  if (!p.checkupDate) {
+    checkHtml = '<p class="text-muted mb-0">No checkup scheduled yet. Contact your Health Worker.</p>';
+  } else {
+    var overdue = dd < 0;
+    var color = overdue ? '#C62828' : dd <= 3 ? '#E65100' : '#2E7D32';
+    var bg = overdue ? '#FFEBEE' : dd <= 3 ? '#FFF8E1' : '#E8F5E9';
+    var label = overdue ? 'Overdue!' : dd === 0 ? 'Today!' : 'Days away';
+    checkHtml = '<div class="checkup-card" style="background:' + bg + ';color:' + color + '">' +
+      '<div class="checkup-days">' + (overdue ? Math.abs(dd) + 'd' : dd + 'd') + '</div>' +
+      '<div class="checkup-lbl"><strong>' + label + '</strong></div>' +
+      '<div style="font-size:0.82rem;margin-top:8px;opacity:0.8">' + p.checkupDate + '</div>' +
+    '</div>' +
+    '<div style="font-size:0.82rem;color:var(--text-muted);margin-top:12px"><i class="fa-solid fa-rotate me-1"></i>Frequency: ' + (p.checkupFreq || 'Not set') + '</div>' +
+    '<div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px"><i class="fa-solid fa-hospital me-1"></i>Hospital: ' + (p.hospital || 'Not assigned') + '</div>' +
+    (overdue ? '<div class="alert alert-danger py-2 px-3 mt-3" style="font-size:0.82rem"><i class="fa-solid fa-triangle-exclamation me-1"></i>Your checkup is overdue. Please visit your assigned hospital or contact your HW immediately.</div>' : '');
+  }
+  document.getElementById('checkupSection').innerHTML = checkHtml;
+
+  // HW info
+  var hwHtml = '';
+  var allUsers = getUsers();
+  var hw = allUsers.find(function(u) { return u.id === p.hwId; });
+  if (hw) {
+    hwHtml = '<div style="font-size:0.88rem">' +
+      '<div style="font-weight:700;font-size:1rem;margin-bottom:6px"><i class="fa-solid fa-circle text-success me-2" style="font-size:0.6rem"></i>' + hw.name + '</div>' +
+      '<div class="text-muted mb-2"><i class="fa-solid fa-location-dot me-1"></i>' + (hw.village || hw.district || 'Telangana') + '</div>' +
+      '<a href="tel:' + hw.phone + '" class="btn btn-success btn-sm w-100"><i class="fa-solid fa-phone me-1"></i>Call HW: ' + hw.phone + '</a>' +
+    '</div>';
+  } else {
+    hwHtml = '<p class="text-muted mb-2" style="font-size:0.85rem">No health worker assigned yet.</p><a href="contact.html" class="btn btn-outline-primary btn-sm w-100">Contact us for help</a>';
+  }
+  document.getElementById('hwInfoSection').innerHTML = hwHtml;
+
+  // SOS history
+  var allSOS = getEmergencyRequests();
+  var myContact = p.contact;
+  var mySOS = allSOS.filter(function(r) { return r.phone === myContact || r.name === p.name; });
+  document.getElementById('sosCount').textContent = mySOS.length;
+  var sosHtml = '';
+  if (mySOS.length === 0) {
+    sosHtml = '<p class="text-muted mb-0"><i class="fa-solid fa-shield-heart me-1 text-success"></i>No SOS requests from your account. Stay safe!</p>';
+  } else {
+    mySOS.forEach(function(r) {
+      var cls = r.status === 'Completed' ? 'sos-done' : 'sos-pending';
+      var bc = r.status === 'Completed' ? 'bg-success' : 'bg-danger';
+      sosHtml += '<div class="sos-row ' + cls + '">' +
+        '<div class="d-flex justify-content-between align-items-start flex-wrap gap-2">' +
+          '<div>' +
+            '<div style="font-weight:700;font-size:0.88rem">' + r.description + '</div>' +
+            '<div style="font-size:0.77rem;color:var(--text-muted);margin-top:3px"><i class="fa-solid fa-clock me-1"></i>' + r.timestamp + '</div>' +
+            '<div style="font-size:0.77rem;color:var(--text-muted)"><i class="fa-solid fa-location-dot me-1"></i>' + r.location + '</div>' +
+          '</div>' +
+          '<span class="sos-status-badge ' + bc + ' text-white">' + r.status + '</span>' +
+        '</div>' +
+      '</div>';
+    });
+  }
+  document.getElementById('sosSection').innerHTML = sosHtml;
+}
+
+function daysDiff(ds) {
+  if (!ds) return 999;
+  var d = new Date(ds); d.setHours(0,0,0,0);
+  var n = new Date(); n.setHours(0,0,0,0);
+  return Math.round((d - n) / 86400000);
+}
+
+function doLogout() {
+  clearSession();
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>

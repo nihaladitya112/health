@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Health Worker Dashboard – GovHealth Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .hw-stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);}
+    .hw-stat-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;flex-shrink:0;}
+    .hw-stat-val{font-family:'Baloo 2',sans-serif;font-size:1.7rem;font-weight:800;line-height:1;}
+    .hw-stat-lbl{font-size:0.75rem;color:var(--text-muted);}
+    .pat-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;height:100%;}
+    .pat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+    .pat-card.red-alert{border-color:#E53935;}
+    .pat-card.orange-alert{border-color:#FF9800;}
+    .pat-card.green-ok{border-color:#43A047;}
+    .pat-head{padding:12px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .pat-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:#fff;flex-shrink:0;}
+    .pat-name{font-weight:700;font-size:0.9rem;}
+    .pat-loc{font-size:0.7rem;color:var(--text-muted);}
+    .s-pill{font-size:0.68rem;font-weight:700;padding:2px 9px;border-radius:100px;margin-left:auto;flex-shrink:0;}
+    .sp-green{background:#E8F5E9;color:#2E7D32;}
+    .sp-red{background:#FFEBEE;color:#C62828;}
+    .sp-orange{background:#FFF8E1;color:#E65100;}
+    .pat-body{padding:12px 14px;}
+    .pr{display:flex;align-items:flex-start;gap:7px;font-size:0.8rem;color:var(--text-secondary);padding:3px 0;}
+    .pr i{width:14px;text-align:center;flex-shrink:0;margin-top:2px;}
+    .pat-foot{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap;}
+    .pat-foot .btn{font-size:0.75rem;padding:5px 9px;border-radius:7px;font-weight:600;}
+    .adh-mini{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:100px;font-size:0.75rem;font-weight:700;}
+    .adh-g{background:#E8F5E9;color:#2E7D32;}
+    .adh-y{background:#FFF8E1;color:#E65100;}
+    .adh-r{background:#FFEBEE;color:#C62828;}
+    .alert-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+    .alert-row.ar-red{border-left:4px solid #E53935;}
+    .alert-row.ar-orange{border-left:4px solid #FF9800;}
+    .alert-row.ar-blue{border-left:4px solid #1565C0;}
+    .ar-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px;}
+    .ar-title{font-weight:700;font-size:0.88rem;}
+    .ar-sub{font-size:0.78rem;color:var(--text-secondary);margin-top:2px;}
+    .ar-actions{margin-left:auto;display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+    .ar-actions .btn{font-size:0.75rem;white-space:nowrap;padding:5px 10px;}
+    .sos-card{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+    .sos-card.sos-pending{border-color:#E53935;}
+    .sos-card.sos-inprog{border-color:#FF9800;}
+    .sos-card.sos-done{border-color:#43A047;opacity:0.8;}
+    .hw-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+    .hw-tab{padding:9px 16px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.2s;}
+    .hw-tab.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+    .hw-tab .badge{font-size:0.7rem;margin-left:4px;}
+    .section-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .section-hd h5{margin:0;font-family:'Baloo 2',sans-serif;font-weight:800;}
+    /* Detail panel */
+    .detail-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:20px;overflow:hidden;}
+    .detail-sec-head{background:var(--surface2);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+    .detail-sec-head h6{margin:0;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:0.95rem;}
+    .detail-sec-body{padding:18px;}
+    .detail-field{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.88rem;}
+    .detail-field:last-child{border-bottom:none;}
+    .detail-label{color:var(--text-muted);font-weight:600;min-width:140px;flex-shrink:0;}
+    .detail-value{color:var(--text);font-weight:500;}
+    .med-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
+    .med-item-label{font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;}
+    .med-item-name{font-weight:700;font-size:0.95rem;color:var(--text);}
+    .med-item-sub{font-size:0.82rem;color:var(--text-secondary);margin-top:3px;}
+    .log-table{width:100%;font-size:0.83rem;border-collapse:collapse;}
+    .log-table th{background:var(--surface2);padding:8px 10px;text-align:left;font-weight:700;font-size:0.78rem;border-bottom:2px solid var(--border);}
+    .log-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    .log-table tr:last-child td{border-bottom:none;}
+    .detail-patient-header{background:linear-gradient(135deg,#4A148C,#7B1FA2);border-radius:14px;padding:20px;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .detail-avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;flex-shrink:0;}
+    .detail-pat-name{font-size:1.3rem;font-weight:800;font-family:'Baloo 2',sans-serif;}
+    .detail-pat-sub{font-size:0.85rem;opacity:0.85;}
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav" style="background:#7B1FA2">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div><div class="brand-title">GovHealth Monitor</div><div class="brand-sub">Health Worker Portal</div></div>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <span class="admin-user-badge" id="hwBadge"><i class="fa-solid fa-user-nurse me-1"></i>HW</span>
+      <div class="position-relative">
+        <button class="btn btn-sm btn-outline-light" onclick="switchTab('alerts')">
+          <i class="fa-solid fa-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="alertNavBadge" style="display:none">0</span>
+        </button>
+      </div>
+      <a href="index.html" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-globe"></i></a>
+      <button class="btn btn-sm btn-outline-light" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header" style="background:linear-gradient(135deg,#4A148C,#7B1FA2)">
+  <div class="container">
+    <h1 class="page-title"><i class="fa-solid fa-user-nurse me-2"></i>Health Worker Dashboard</h1>
+    <p class="page-sub" id="hwSubtitle">Manage patients, track medicine &amp; checkup compliance</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-3 mb-4" id="hwStats"></div>
+
+  <div class="hw-tabs">
+    <button class="hw-tab active" id="tab-patients" onclick="switchTab('patients')"><i class="fa-solid fa-users me-1"></i>My Patients</button>
+    <button class="hw-tab" id="tab-alerts" onclick="switchTab('alerts')"><i class="fa-solid fa-triangle-exclamation me-1"></i>Alerts <span class="badge bg-danger" id="alertTabBadge">0</span></button>
+    <button class="hw-tab" id="tab-sos" onclick="switchTab('sos')"><i class="fa-solid fa-bell-ring me-1"></i>SOS Requests <span class="badge bg-danger" id="sosBadge">0</span></button>
+    <button class="hw-tab" id="tab-add" onclick="switchTab('add')"><i class="fa-solid fa-user-plus me-1"></i>Add Patient</button>
+  </div>
+
+  <!-- PATIENTS -->
+  <div id="panel-patients">
+    <div class="section-hd">
+      <h5><i class="fa-solid fa-users text-primary me-2"></i>My Patients</h5>
+      <button class="btn btn-sm btn-primary" onclick="switchTab('add')"><i class="fa-solid fa-plus me-1"></i>Add</button>
+    </div>
+    <div class="row g-3" id="patientCards"></div>
+    <div id="noPatients" class="text-center py-5 d-none">
+      <i class="fa-solid fa-user-plus fa-3x text-muted mb-3 d-block"></i>
+      <p class="text-muted">No patients yet. Click Add Patient to start.</p>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div id="panel-alerts" class="d-none">
+    <div class="section-hd"><h5><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Alerts</h5></div>
+    <div id="alertsList"></div>
+  </div>
+
+  <!-- SOS -->
+  <div id="panel-sos" class="d-none">
+    <div class="section-hd"><h5><i class="fa-solid fa-bell-ring text-danger me-2"></i>SOS Emergency Requests</h5></div>
+    <div id="sosList"></div>
+  </div>
+
+  <!-- ADD PATIENT -->
+  <div id="panel-add" class="d-none">
+    <div class="section-hd"><h5><i class="fa-solid fa-user-plus text-primary me-2"></i>Add New Elderly Patient</h5></div>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="admin-form-card">
+          <div class="step-indicator mb-4">
+            <div class="step-dot active" id="sd1">1</div><div class="step-line"></div>
+            <div class="step-dot" id="sd2">2</div><div class="step-line"></div>
+            <div class="step-dot" id="sd3">3</div>
+          </div>
+          <form id="addPatForm">
+            <div id="as1">
+              <h6 class="step-head mb-3"><i class="fa-solid fa-user me-2"></i>Step 1 — Patient Details</h6>
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label fw-600">Full Name *</label><input type="text" class="form-control" id="pName" required></div>
+                <div class="col-md-3"><label class="form-label fw-600">Age *</label><input type="number" class="form-control" id="pAge" min="1" max="120" required></div>
+                <div class="col-md-3"><label class="form-label fw-600">Gender *</label><select class="form-select" id="pGender" required><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                <div class="col-md-6"><label class="form-label fw-600">Village *</label><input type="text" class="form-control" id="pVillage" required></div>
+                <div class="col-md-6"><label class="form-label fw-600">District *</label><select class="form-select" id="pDistrict" required><option value="">Select</option><option>Hyderabad</option><option>Warangal</option><option>Karimnagar</option><option>Nizamabad</option><option>Khammam</option><option>Nalgonda</option><option>Mahbubnagar</option><option>Medak</option><option>Adilabad</option><option>Rangareddy</option><option>Other</option></select></div>
+                <div class="col-12"><label class="form-label fw-600">Disease / Condition *</label><input type="text" class="form-control" id="pDisease" placeholder="e.g. Diabetes, Hypertension" required></div>
+                <div class="col-md-6"><label class="form-label fw-600">Family Contact *</label><input type="tel" class="form-control" id="pContact" required></div>
+                <div class="col-md-6"><label class="form-label fw-600">Nearest Hospital *</label><input type="text" class="form-control" id="pHospital" required></div>
+                <div class="col-md-6"><label class="form-label fw-600">Patient Login Username *</label><input type="text" class="form-control" id="pUsername" required><div id="pUserFb" class="pass-hint mt-1"></div></div>
+                <div class="col-md-6"><label class="form-label fw-600">Patient Password *</label><input type="text" class="form-control" id="pPassword" required></div>
+              </div>
+              <button type="button" class="btn btn-primary w-100 mt-3" onclick="asStep(2)">Next: Medicine Schedule <i class="fa-solid fa-arrow-right ms-1"></i></button>
+            </div>
+            <div id="as2" class="d-none">
+              <h6 class="step-head mb-3"><i class="fa-solid fa-pills me-2"></i>Step 2 — Medicine Schedule</h6>
+              <div id="medRowsContainer"></div>
+              <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addMedRow()"><i class="fa-solid fa-plus me-1"></i>Add Another Medicine</button>
+              <div class="d-flex gap-2 mt-3">
+                <button type="button" class="btn btn-outline-secondary flex-fill" onclick="asStep(1)"><i class="fa-solid fa-arrow-left me-1"></i>Back</button>
+                <button type="button" class="btn btn-primary flex-fill" onclick="asStep(3)">Next: Checkup <i class="fa-solid fa-arrow-right ms-1"></i></button>
+              </div>
+            </div>
+            <div id="as3" class="d-none">
+              <h6 class="step-head mb-3"><i class="fa-solid fa-calendar-check me-2"></i>Step 3 — Checkup Schedule</h6>
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label fw-600">Next Checkup Date *</label><input type="date" class="form-control" id="pCheckDate" required></div>
+                <div class="col-md-6"><label class="form-label fw-600">Frequency *</label><select class="form-select" id="pCheckFreq" required><option value="">Select</option><option>Weekly</option><option>Monthly</option><option>Every 3 Months</option><option>Every 6 Months</option></select></div>
+                <div class="col-12"><label class="form-label fw-600">Additional Notes</label><textarea class="form-control" id="pNotes" rows="2"></textarea></div>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <button type="button" class="btn btn-outline-secondary flex-fill" onclick="asStep(2)"><i class="fa-solid fa-arrow-left me-1"></i>Back</button>
+                <button type="submit" class="btn btn-success flex-fill"><i class="fa-solid fa-check me-1"></i>Register Patient</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENT DETAIL PANEL -->
+  <div id="panel-detail" class="d-none">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <button class="btn btn-outline-secondary btn-sm" onclick="switchTab('patients')">
+        <i class="fa-solid fa-arrow-left me-1"></i>Back to All Patients
+      </button>
+    </div>
+    <div id="detailContent"></div>
+  </div>
+
+</div><!-- end container -->
+
+<!-- EDIT PATIENT MODAL (Quick Edit) -->
+<div class="modal fade" id="editPatModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="background:#7B1FA2;color:#fff">
+        <h5 class="modal-title"><i class="fa-solid fa-pen me-2"></i>Quick Edit — <span id="editPatName"></span></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <input type="hidden" id="ePatId">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" class="form-control" id="eName"></div>
+          <div class="col-md-3"><label class="form-label">Age</label><input type="number" class="form-control" id="eAge"></div>
+          <div class="col-md-3"><label class="form-label">Gender</label><select class="form-select" id="eGender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="col-md-6"><label class="form-label">Village</label><input type="text" class="form-control" id="eVillage"></div>
+          <div class="col-md-6"><label class="form-label">District</label><input type="text" class="form-control" id="eDistrict"></div>
+          <div class="col-12"><label class="form-label">Disease</label><input type="text" class="form-control" id="eDisease"></div>
+          <div class="col-md-6"><label class="form-label">Family Contact</label><input type="tel" class="form-control" id="eContact"></div>
+          <div class="col-md-6"><label class="form-label">Hospital</label><input type="text" class="form-control" id="eHospital"></div>
+          <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" id="eNotes" rows="2"></textarea></div>
+          <div class="col-12"><hr><label class="form-label fw-600">Medicine Name</label><input type="text" class="form-control" id="eMed"></div>
+          <div class="col-md-6"><label class="form-label">Frequency</label><select class="form-select" id="eMedFreq"><option>Daily Once</option><option>Daily Twice (Morning &amp; Night)</option><option>Daily Thrice</option><option>Weekly Once</option><option>As Needed</option></select></div>
+          <div class="col-md-6"><label class="form-label">Reminder Time</label><input type="time" class="form-control" id="eMedTime"></div>
+          <div class="col-12"><label class="form-label">Medicine Notes</label><input type="text" class="form-control" id="eMedNotes"></div>
+          <div class="col-12"><hr><label class="form-label fw-600">Next Checkup Date</label><input type="date" class="form-control" id="eCheckDate"></div>
+          <div class="col-md-6"><label class="form-label">Checkup Frequency</label><select class="form-select" id="eCheckFreq"><option>Weekly</option><option>Monthly</option><option>Every 3 Months</option><option>Every 6 Months</option></select></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-success" onclick="saveQuickEdit()"><i class="fa-solid fa-floppy-disk me-1"></i>Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+requireRole('hw');
+var hwUser = getSession();
+var editPatModal;
+var addMedCount = 0;
+var detailMedCount = 0;
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('hwBadge').innerHTML = '<i class="fa-solid fa-user-nurse me-1"></i>' + hwUser.name;
+  document.getElementById('hwSubtitle').textContent = 'Welcome ' + hwUser.name + ' — ' + (hwUser.district || '');
+  editPatModal = new bootstrap.Modal(document.getElementById('editPatModal'));
+  document.getElementById('pCheckDate').min = new Date().toISOString().split('T')[0];
+  document.getElementById('pUsername').addEventListener('input', function() {
+    var fb = document.getElementById('pUserFb');
+    var taken = getUsers().find(function(u){ return u.username === this.value.trim(); }, this);
+    fb.className = taken ? 'pass-hint weak' : 'pass-hint strong';
+    fb.textContent = taken ? '✕ Username taken' : '✓ Available';
+  });
+  document.getElementById('addPatForm').addEventListener('submit', submitAddPatient);
+  addMedRow();
+  renderAll();
+  setInterval(renderAll, 30000);
+});
+
+// ── RENDER ALL ────────────────────────────────────────────────
+function renderAll() { renderStats(); renderPatients(); renderAlerts(); renderSOS(); }
+
+// ── STEP NAVIGATION ───────────────────────────────────────────
+function asStep(n) {
+  [1,2,3].forEach(function(i) {
+    document.getElementById('as'+i).classList.toggle('d-none', i !== n);
+    document.getElementById('sd'+i).classList.toggle('active', i <= n);
+  });
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────
+function switchTab(tab) {
+  ['patients','alerts','sos','add','detail'].forEach(function(t) {
+    var el = document.getElementById('panel-' + t);
+    if (el) el.classList.add('d-none');
+  });
+  var active = document.getElementById('panel-' + tab);
+  if (active) active.classList.remove('d-none');
+  ['patients','alerts','sos','add'].forEach(function(t) {
+    var btn = document.getElementById('tab-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function getPats() { return getPatients().filter(function(p){ return p.hwId === hwUser.id; }); }
+function isOverdue(ds) { if(!ds) return false; var d=new Date(ds); d.setHours(23,59,59,999); return d < new Date(); }
+function daysDiff(ds) { if(!ds) return 999; var d=new Date(ds); d.setHours(0,0,0,0); var n=new Date(); n.setHours(0,0,0,0); return Math.round((d-n)/86400000); }
+function getTodayMedStatus(p) { var today=new Date().toDateString(); var e=(p.medicineLog||[]).find(function(l){ return new Date(l.rawDate||l.date).toDateString()===today; }); return e?e.status:null; }
+function countConsecutiveMissed(ml) { var c=0; for(var i=0;i<ml.length;i++){ if(ml[i].status==='Taken')break; if(ml[i].status==='Missed'||ml[i].status==='Auto-Missed')c++; else break; } return c; }
+function getAdh(p) { var l=p.medicineLog||[]; if(!l.length)return{pct:0,streak:0}; var r=l.slice(0,30); var t=r.filter(function(x){return x.status==='Taken';}).length; return{pct:Math.round(t/r.length*100),streak:p.adherenceStreak||0}; }
+function getMedicinesList(p) { if(p.medicines&&p.medicines.length>0)return p.medicines; if(p.medicine)return[{name:p.medicine,freq:p.medFreq||'Daily Once',time:p.medTime||'08:00',notes:p.medNotes||''}]; return[]; }
+function safeStr(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function field(label, val) { return '<div class="detail-field"><span class="detail-label">'+label+'</span><span class="detail-value">'+(val||'—')+'</span></div>'; }
+
+// ── STATS ─────────────────────────────────────────────────────
+function renderStats() {
+  var pts = getPats();
+  var hwAlerts = JSON.parse(localStorage.getItem('govhealth_hw_alerts')||'[]').filter(function(a){return a.hwId===hwUser.id&&!a.read;});
+  var sosCount = getEmergencyRequests().filter(function(r){return (r.hwId===hwUser.id||!r.hwId)&&r.status==='Pending';}).length;
+  var dueCheck = pts.filter(function(p){var d=daysDiff(p.checkupDate);return d>=0&&d<=3;}).length;
+  document.getElementById('hwStats').innerHTML =
+    '<div class="col-6 col-md-3"><div class="hw-stat"><div class="hw-stat-icon" style="background:linear-gradient(135deg,#7B1FA2,#9C27B0)"><i class="fa-solid fa-users"></i></div><div><div class="hw-stat-val">'+pts.length+'</div><div class="hw-stat-lbl">My Patients</div></div></div></div>' +
+    '<div class="col-6 col-md-3"><div class="hw-stat"><div class="hw-stat-icon" style="background:linear-gradient(135deg,#C62828,#E53935)"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="hw-stat-val">'+hwAlerts.length+'</div><div class="hw-stat-lbl">Unread Alerts</div></div></div></div>' +
+    '<div class="col-6 col-md-3"><div class="hw-stat"><div class="hw-stat-icon" style="background:linear-gradient(135deg,#1565C0,#1976D2)"><i class="fa-solid fa-calendar-check"></i></div><div><div class="hw-stat-val">'+dueCheck+'</div><div class="hw-stat-lbl">Checkup Due Soon</div></div></div></div>' +
+    '<div class="col-6 col-md-3"><div class="hw-stat"><div class="hw-stat-icon" style="background:linear-gradient(135deg,#B71C1C,#C62828)"><i class="fa-solid fa-bell-ring"></i></div><div><div class="hw-stat-val">'+sosCount+'</div><div class="hw-stat-lbl">Pending SOS</div></div></div></div>';
+  var ab = hwAlerts.length;
+  document.getElementById('alertTabBadge').textContent = ab;
+  document.getElementById('alertNavBadge').textContent = ab;
+  document.getElementById('alertNavBadge').style.display = ab > 0 ? '' : 'none';
+  document.getElementById('sosBadge').textContent = sosCount;
+}
+
+// ── RENDER PATIENTS ───────────────────────────────────────────
+function renderPatients() {
+  var pts = getPats();
+  var el = document.getElementById('patientCards');
+  var no = document.getElementById('noPatients');
+  if (!pts.length) { el.innerHTML = ''; no.classList.remove('d-none'); return; }
+  no.classList.add('d-none');
+  var colors = ['#7B1FA2','#1565C0','#2E7D32','#E65100','#C62828','#00695C'];
+  var html = '';
+  pts.forEach(function(p, idx) {
+    var medStatus = getTodayMedStatus(p);
+    var consec = countConsecutiveMissed(p.medicineLog||[]);
+    var adh = getAdh(p);
+    var dd = daysDiff(p.checkupDate);
+    var checkOverdue = isOverdue(p.checkupDate);
+    var checkSoon = dd >= 0 && dd <= 3;
+    var cardClass = '', pillLabel = 'On Track', pillClass = 'sp-green';
+    if (consec >= 2) { cardClass = 'red-alert'; pillLabel = '\u26A0\uFE0F '+consec+'d Missed'; pillClass = 'sp-red'; }
+    else if (medStatus === 'Missed' || medStatus === 'Auto-Missed') { cardClass = 'red-alert'; pillLabel = 'Missed Today'; pillClass = 'sp-red'; }
+    else if (checkOverdue) { cardClass = 'orange-alert'; pillLabel = 'Checkup Overdue'; pillClass = 'sp-orange'; }
+    else if (checkSoon) { cardClass = 'orange-alert'; pillLabel = 'Check in '+dd+'d'; pillClass = 'sp-orange'; }
+    else if (medStatus === 'Taken') { cardClass = 'green-ok'; pillLabel = 'Taken Today'; pillClass = 'sp-green'; }
+    var adhClass = adh.pct >= 80 ? 'adh-g' : adh.pct >= 50 ? 'adh-y' : 'adh-r';
+    var meds = getMedicinesList(p);
+    var medDisplay = meds.length > 0 ? meds.map(function(m){return m.name+' — '+m.freq+' @ '+m.time;}).join('<br>') : (p.medicine||'Not set');
+    var recentLog = (p.medicineLog||[]).slice(0,3);
+    var logHtml = '';
+    recentLog.forEach(function(l) {
+      var bg = l.status==='Taken'?'#E8F5E9':l.status==='Auto-Missed'?'#F5F5F5':'#FFEBEE';
+      var col = l.status==='Taken'?'#2E7D32':l.status==='Auto-Missed'?'#757575':'#C62828';
+      var icon = l.status==='Taken'?'✅':l.status==='Auto-Missed'?'🤖':'❌';
+      logHtml += '<div style="display:flex;justify-content:space-between;padding:3px 8px;border-radius:6px;font-size:0.75rem;margin-bottom:2px;background:'+bg+';color:'+col+'"><span>'+icon+' '+l.status+'</span><small>'+new Date(l.rawDate||l.date).toLocaleDateString()+'</small></div>';
+    });
+    html += '<div class="col-md-6 col-lg-4"><div class="pat-card '+cardClass+'">';
+    html += '<div class="pat-head"><div class="pat-avatar" style="background:'+colors[idx%colors.length]+'">'+p.name.charAt(0)+'</div>';
+    html += '<div class="flex-grow-1"><div class="pat-name">'+p.name+'</div><div class="pat-loc"><i class="fa-solid fa-location-dot me-1"></i>'+p.village+'</div></div>';
+    html += '<span class="s-pill '+pillClass+'">'+pillLabel+'</span></div>';
+    html += '<div class="pat-body">';
+    html += '<div class="pr"><i class="fa-solid fa-virus text-danger"></i><span>'+p.disease+'</span></div>';
+    html += '<div class="pr"><i class="fa-solid fa-pills text-warning"></i><span style="line-height:1.4">'+medDisplay+'</span></div>';
+    html += '<div class="pr"><i class="fa-solid fa-calendar-check '+(checkOverdue?'text-danger':checkSoon?'text-warning':'text-success')+'"></i><span>Checkup: <strong>'+p.checkupDate+'</strong>'+(checkOverdue?' <span class="badge bg-danger ms-1" style="font-size:0.65rem">Overdue</span>':checkSoon?' <span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem">In '+dd+'d</span>':'')+'</span></div>';
+    html += '<div class="pr"><i class="fa-solid fa-at text-muted"></i><span>Login: <code style="font-size:0.78rem">'+p.patUsername+'</code></span></div>';
+    html += '<div class="mt-2 d-flex align-items-center gap-2 flex-wrap">';
+    html += '<span class="adh-mini '+adhClass+'"><i class="fa-solid fa-chart-line me-1"></i>'+adh.pct+'% adherence</span>';
+    if (adh.streak > 0) html += '<span class="adh-mini adh-g">🔥 '+adh.streak+'d streak</span>';
+    if (consec >= 2)    html += '<span class="adh-mini adh-r">⚠️ '+consec+' days missed</span>';
+    html += '</div>';
+    if (logHtml) html += '<div class="mt-2">'+logHtml+'</div>';
+    html += '</div>';
+    html += '<div class="pat-foot">';
+    html += '<button class="btn btn-success btn-sm" onclick="hwMarkMed('+p.id+',\'Taken\')"><i class="fa-solid fa-check me-1"></i>Taken</button>';
+    html += '<button class="btn btn-danger btn-sm" onclick="hwMarkMed('+p.id+',\'Missed\')"><i class="fa-solid fa-times me-1"></i>Missed</button>';
+    html += '<button class="btn btn-primary btn-sm" onclick="hwMarkCheck('+p.id+',\'Done\')"><i class="fa-solid fa-calendar-check me-1"></i>Checkup Done</button>';
+    html += '<button class="btn btn-info btn-sm text-white" onclick="openDetailPanel('+p.id+')"><i class="fa-solid fa-eye me-1"></i>View &amp; Edit</button>';
+    html += '</div></div></div>';
+  });
+  el.innerHTML = html;
+}
+
+// ── VIEW & EDIT DETAIL PANEL ──────────────────────────────────
+function openDetailPanel(id) {
+  switchTab('detail');
+  var p = getPatients().find(function(x){ return x.id == id; });
+  if (!p) { document.getElementById('detailContent').innerHTML = '<p class="text-muted">Patient not found.</p>'; return; }
+  buildDetailPanel(p);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function buildDetailPanel(p) {
+  var pid = p.id;
+  var meds = getMedicinesList(p);
+  var ml = p.medicineLog || [];
+  var cl = p.checkupLog  || [];
+  var adh = getAdh(p);
+  var dd = daysDiff(p.checkupDate);
+  var checkOverdue = isOverdue(p.checkupDate);
+  var checkSoon = dd >= 0 && dd <= 3;
+
+  var html = '';
+
+  // ── HEADER ──
+  html += '<div class="detail-patient-header">';
+  html += '<div class="detail-avatar">'+p.name.charAt(0).toUpperCase()+'</div>';
+  html += '<div class="flex-grow-1">';
+  html += '<div class="detail-pat-name">'+p.name+'</div>';
+  html += '<div class="detail-pat-sub">'+p.disease+' | '+p.village+', '+p.district+'</div>';
+  html += '<div class="mt-2 d-flex gap-2 flex-wrap">';
+  html += '<span class="badge bg-light text-dark">'+adh.pct+'% adherence</span>';
+  if (adh.streak > 0) html += '<span class="badge bg-warning text-dark">🔥 '+adh.streak+'d streak</span>';
+  if (checkOverdue)   html += '<span class="badge bg-danger">Checkup Overdue</span>';
+  else if (checkSoon) html += '<span class="badge bg-warning text-dark">Checkup in '+dd+'d</span>';
+  html += '</div></div>';
+  html += '<button class="btn btn-sm btn-outline-light" onclick="openQuickEdit('+pid+')"><i class="fa-solid fa-pen me-1"></i>Quick Edit</button>';
+  html += '</div>';
+
+  // ── SECTION 1: PATIENT DETAILS ──
+  html += '<div class="detail-section">';
+  html += '<div class="detail-sec-head"><h6><i class="fa-solid fa-user me-2 text-primary"></i>Patient Details</h6>';
+  html += '<button class="btn btn-sm btn-outline-primary" onclick="toggleEdit(\'sec-pat\','+pid+')"><i class="fa-solid fa-pen me-1"></i>Edit</button></div>';
+  // view
+  html += '<div id="sec-pat-view" class="detail-sec-body"><div class="row"><div class="col-md-6">';
+  html += field('Name', p.name)+field('Age', p.age+' years')+field('Gender', p.gender)+field('Village', p.village)+field('District', p.district);
+  html += '</div><div class="col-md-6">';
+  html += field('Disease', p.disease)+field('Phone', p.contact)+field('Hospital', p.hospital)+field('Login', '<code>'+p.patUsername+'</code>')+field('Notes', p.notes||'—');
+  html += '</div></div></div>';
+  // edit
+  html += '<div id="sec-pat-edit" class="detail-sec-body d-none"><div class="row g-3">';
+  html += '<div class="col-md-6"><label class="form-label fw-600">Name</label><input class="form-control" id="dp-name" value="'+safeStr(p.name)+'"></div>';
+  html += '<div class="col-md-3"><label class="form-label fw-600">Age</label><input type="number" class="form-control" id="dp-age" value="'+p.age+'" min="1" max="120"></div>';
+  html += '<div class="col-md-3"><label class="form-label fw-600">Gender</label><select class="form-select" id="dp-gender"><option'+(p.gender==='Male'?' selected':'')+'>Male</option><option'+(p.gender==='Female'?' selected':'')+'>Female</option><option'+(p.gender==='Other'?' selected':'')+'>Other</option></select></div>';
+  html += '<div class="col-md-6"><label class="form-label fw-600">Village</label><input class="form-control" id="dp-village" value="'+safeStr(p.village)+'"></div>';
+  html += '<div class="col-md-6"><label class="form-label fw-600">District</label><input class="form-control" id="dp-district" value="'+safeStr(p.district)+'"></div>';
+  html += '<div class="col-12"><label class="form-label fw-600">Disease</label><input class="form-control" id="dp-disease" value="'+safeStr(p.disease)+'"></div>';
+  html += '<div class="col-md-6"><label class="form-label fw-600">Phone</label><input class="form-control" id="dp-contact" value="'+safeStr(p.contact)+'"></div>';
+  html += '<div class="col-md-6"><label class="form-label fw-600">Hospital</label><input class="form-control" id="dp-hospital" value="'+safeStr(p.hospital)+'"></div>';
+  html += '<div class="col-12"><label class="form-label fw-600">Notes</label><textarea class="form-control" id="dp-notes" rows="2">'+safeStr(p.notes||'')+'</textarea></div>';
+  html += '</div><div class="d-flex gap-2 mt-3">';
+  html += '<button class="btn btn-success btn-sm" onclick="saveDetail(\'patient\','+pid+')"><i class="fa-solid fa-floppy-disk me-1"></i>Save</button>';
+  html += '<button class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(\'sec-pat\')">Cancel</button>';
+  html += '</div></div></div>';
+
+  // ── SECTION 2: MEDICINE SCHEDULE ──
+  html += '<div class="detail-section">';
+  html += '<div class="detail-sec-head"><h6><i class="fa-solid fa-pills me-2 text-warning"></i>Medicine Schedule ('+meds.length+' medicine'+(meds.length!==1?'s':'')+')</h6>';
+  html += '<button class="btn btn-sm btn-outline-primary" onclick="toggleEdit(\'sec-med\','+pid+')"><i class="fa-solid fa-pen me-1"></i>Edit</button></div>';
+  // view
+  html += '<div id="sec-med-view" class="detail-sec-body">';
+  if (meds.length > 0) {
+    meds.forEach(function(m, i) {
+      html += '<div class="med-item"><div class="med-item-label">Medicine '+(i+1)+'</div>';
+      html += '<div class="med-item-name"><i class="fa-solid fa-capsules me-2 text-warning"></i>'+m.name+'</div>';
+      html += '<div class="med-item-sub">'+m.freq+' &nbsp;|&nbsp; Reminder at '+m.time+(m.notes?' &nbsp;|&nbsp; '+m.notes:'')+'</div></div>';
+    });
+  } else {
+    html += '<p class="text-muted mb-0">No medicines added yet.</p>';
+  }
+  html += '</div>';
+  // edit
+  html += '<div id="sec-med-edit" class="detail-sec-body d-none">';
+  html += '<div id="dp-med-rows"></div>';
+  html += '<button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addDpMedRow()"><i class="fa-solid fa-plus me-1"></i>Add Another Medicine</button>';
+  html += '<div class="d-flex gap-2 mt-3">';
+  html += '<button class="btn btn-success btn-sm" onclick="saveDetail(\'medicine\','+pid+')"><i class="fa-solid fa-floppy-disk me-1"></i>Save Medicines</button>';
+  html += '<button class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(\'sec-med\')">Cancel</button>';
+  html += '</div></div></div>';
+
+  // ── SECTION 3: CHECKUP SCHEDULE ──
+  var freqOptions = ['Weekly','Monthly','Every 3 Months','Every 6 Months'];
+  var freqSelHtml = freqOptions.map(function(o){ return '<option'+(p.checkupFreq===o?' selected':'')+'>'+o+'</option>'; }).join('');
+  var checkDisplay = checkOverdue
+    ? '<strong class="text-danger">'+(p.checkupDate||'Not set')+'</strong> <span class="badge bg-danger ms-1">Overdue</span>'
+    : checkSoon
+      ? '<strong class="text-warning">'+(p.checkupDate||'Not set')+'</strong> <span class="badge bg-warning text-dark ms-1">Due in '+dd+'d</span>'
+      : '<strong class="text-success">'+(p.checkupDate||'Not set')+'</strong>';
+
+  html += '<div class="detail-section">';
+  html += '<div class="detail-sec-head"><h6><i class="fa-solid fa-calendar-check me-2 text-primary"></i>Checkup Schedule</h6>';
+  html += '<button class="btn btn-sm btn-outline-primary" onclick="toggleEdit(\'sec-chk\','+pid+')"><i class="fa-solid fa-pen me-1"></i>Edit</button></div>';
+  // view
+  html += '<div id="sec-chk-view" class="detail-sec-body"><div class="row"><div class="col-md-6">';
+  html += field('Next Checkup Date', checkDisplay)+field('Frequency', p.checkupFreq||'—')+field('Hospital', p.hospital||'—');
+  html += '</div><div class="col-md-6"><div class="d-flex gap-2 mt-1">';
+  html += '<button class="btn btn-sm btn-success" onclick="hwMarkCheck('+pid+',\'Done\');setTimeout(function(){openDetailPanel('+pid+')},400)">✅ Mark Done</button>';
+  html += '<button class="btn btn-sm btn-danger" onclick="hwMarkCheck('+pid+',\'Missed\');setTimeout(function(){openDetailPanel('+pid+')},400)">❌ Mark Missed</button>';
+  html += '</div></div></div></div>';
+  // edit
+  html += '<div id="sec-chk-edit" class="detail-sec-body d-none"><div class="row g-3">';
+  html += '<div class="col-md-5"><label class="form-label fw-600">Next Checkup Date</label><input type="date" class="form-control" id="dp-checkdate" value="'+(p.checkupDate||'')+'"></div>';
+  html += '<div class="col-md-4"><label class="form-label fw-600">Frequency</label><select class="form-select" id="dp-checkfreq">'+freqSelHtml+'</select></div>';
+  html += '<div class="col-md-3"><label class="form-label fw-600">Hospital</label><input class="form-control" id="dp-checkhospital" value="'+safeStr(p.hospital||'')+'"></div>';
+  html += '</div><div class="d-flex gap-2 mt-3">';
+  html += '<button class="btn btn-success btn-sm" onclick="saveDetail(\'checkup\','+pid+')"><i class="fa-solid fa-floppy-disk me-1"></i>Save Checkup</button>';
+  html += '<button class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(\'sec-chk\')">Cancel</button>';
+  html += '</div></div></div>';
+
+  // ── SECTION 4: MEDICINE LOG ──
+  html += '<div class="detail-section">';
+  html += '<div class="detail-sec-head"><h6><i class="fa-solid fa-clock-rotate-left me-2 text-warning"></i>Medicine Log ('+ml.length+' entries)</h6>';
+  html += '<div class="d-flex gap-2">';
+  html += '<button class="btn btn-sm btn-success" onclick="hwMarkMed('+pid+',\'Taken\');setTimeout(function(){openDetailPanel('+pid+')},400)"><i class="fa-solid fa-check me-1"></i>Log Taken</button>';
+  html += '<button class="btn btn-sm btn-danger" onclick="hwMarkMed('+pid+',\'Missed\');setTimeout(function(){openDetailPanel('+pid+')},400)"><i class="fa-solid fa-times me-1"></i>Log Missed</button>';
+  html += '<button class="btn btn-sm btn-outline-primary" onclick="toggleEdit(\'sec-medlog\','+pid+')"><i class="fa-solid fa-pen me-1"></i>Edit Log</button>';
+  html += '</div></div>';
+  // view
+  html += '<div id="sec-medlog-view" class="detail-sec-body">';
+  if (ml.length > 0) {
+    html += '<div class="table-responsive"><table class="log-table"><thead><tr><th>Date &amp; Time</th><th>Medicine</th><th>Status</th><th>Updated By</th></tr></thead><tbody>';
+    ml.slice(0, 30).forEach(function(l) {
+      var mn = l.medicineName || (meds[0] ? meds[0].name : p.medicine || '—');
+      var sc = l.status==='Taken' ? 'badge bg-success' : l.status==='Auto-Missed' ? 'badge bg-secondary' : 'badge bg-danger';
+      var si = l.status==='Taken' ? '✅' : l.status==='Auto-Missed' ? '🤖' : '❌';
+      html += '<tr><td>'+l.date+'</td><td>'+mn+'</td><td><span class="'+sc+'" style="font-size:0.75rem">'+si+' '+l.status+'</span></td><td>'+(l.by||'Patient')+'</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  } else { html += '<p class="text-muted mb-0">No medicine logs yet.</p>'; }
+  html += '</div>';
+  // edit
+  html += '<div id="sec-medlog-edit" class="detail-sec-body d-none">';
+  html += '<p class="text-muted" style="font-size:0.85rem"><i class="fa-solid fa-info-circle me-1"></i>Change the status of any log entry below and click Save.</p>';
+  html += '<div class="table-responsive"><table class="log-table"><thead><tr><th>Date &amp; Time</th><th>Medicine</th><th>Status</th><th>Updated By</th></tr></thead><tbody id="medlog-edit-rows">';
+  ml.slice(0, 30).forEach(function(l, i) {
+    var mn = l.medicineName || (meds[0] ? meds[0].name : p.medicine || '—');
+    html += '<tr><td style="font-size:0.8rem">'+l.date+'</td><td style="font-size:0.8rem">'+mn+'</td><td>';
+    html += '<select class="form-select form-select-sm dp-medlog-status" data-idx="'+i+'" style="width:120px">';
+    html += '<option'+(l.status==='Taken'?' selected':'')+'>Taken</option>';
+    html += '<option'+(l.status==='Missed'?' selected':'')+'>Missed</option>';
+    html += '<option'+(l.status==='Auto-Missed'?' selected':'')+'>Auto-Missed</option>';
+    html += '</select></td><td style="font-size:0.8rem">'+(l.by||'Patient')+'</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div class="d-flex gap-2 mt-3">';
+  html += '<button class="btn btn-success btn-sm" onclick="saveDetail(\'medlog\','+pid+')"><i class="fa-solid fa-floppy-disk me-1"></i>Save Log Changes</button>';
+  html += '<button class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(\'sec-medlog\')">Cancel</button>';
+  html += '</div></div></div>';
+
+  // ── SECTION 5: CHECKUP LOG ──
+  html += '<div class="detail-section">';
+  html += '<div class="detail-sec-head"><h6><i class="fa-solid fa-calendar-days me-2 text-primary"></i>Checkup Log ('+cl.length+' entries)</h6>';
+  html += '<button class="btn btn-sm btn-outline-primary" onclick="toggleEdit(\'sec-chklog\','+pid+')"><i class="fa-solid fa-pen me-1"></i>Edit Log</button></div>';
+  // view
+  html += '<div id="sec-chklog-view" class="detail-sec-body">';
+  if (cl.length > 0) {
+    html += '<div class="table-responsive"><table class="log-table"><thead><tr><th>Date &amp; Time</th><th>Status</th><th>Updated By</th></tr></thead><tbody>';
+    cl.slice(0, 20).forEach(function(l) {
+      var sc = l.status==='Done' ? 'badge bg-success' : l.status==='Auto-Missed' ? 'badge bg-secondary' : 'badge bg-danger';
+      var si = l.status==='Done' ? '✅' : l.status==='Auto-Missed' ? '🤖' : '❌';
+      html += '<tr><td>'+l.date+'</td><td><span class="'+sc+'" style="font-size:0.75rem">'+si+' '+l.status+'</span></td><td>'+(l.by||'Patient')+'</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  } else { html += '<p class="text-muted mb-0">No checkup logs yet.</p>'; }
+  html += '</div>';
+  // edit
+  html += '<div id="sec-chklog-edit" class="detail-sec-body d-none">';
+  html += '<p class="text-muted" style="font-size:0.85rem"><i class="fa-solid fa-info-circle me-1"></i>Update the status of any checkup entry below and click Save.</p>';
+  html += '<div class="table-responsive"><table class="log-table"><thead><tr><th>Date &amp; Time</th><th>Status</th><th>Updated By</th></tr></thead><tbody id="chklog-edit-rows">';
+  cl.slice(0, 20).forEach(function(l, i) {
+    html += '<tr><td style="font-size:0.8rem">'+l.date+'</td><td>';
+    html += '<select class="form-select form-select-sm dp-chklog-status" data-idx="'+i+'" style="width:130px">';
+    html += '<option'+(l.status==='Done'?' selected':'')+'>Done</option>';
+    html += '<option'+(l.status==='Missed'?' selected':'')+'>Missed</option>';
+    html += '<option'+(l.status==='Auto-Missed'?' selected':'')+'>Auto-Missed</option>';
+    html += '</select></td><td style="font-size:0.8rem">'+(l.by||'Patient')+'</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div class="d-flex gap-2 mt-3">';
+  html += '<button class="btn btn-success btn-sm" onclick="saveDetail(\'chklog\','+pid+')"><i class="fa-solid fa-floppy-disk me-1"></i>Save Log Changes</button>';
+  html += '<button class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(\'sec-chklog\')">Cancel</button>';
+  html += '</div></div></div>';
+
+  document.getElementById('detailContent').innerHTML = html;
+}
+
+// ── TOGGLE EDIT / CANCEL ──────────────────────────────────────
+function toggleEdit(secId, pid) {
+  var view = document.getElementById(secId+'-view');
+  var edit = document.getElementById(secId+'-edit');
+  if (!view || !edit) return;
+  var editing = !edit.classList.contains('d-none');
+  if (!editing) {
+    // If opening medicine edit, populate medicine rows
+    if (secId === 'sec-med') {
+      var p = getPatients().find(function(x){ return x.id == pid; });
+      var meds = getMedicinesList(p);
+      document.getElementById('dp-med-rows').innerHTML = '';
+      detailMedCount = 0;
+      if (meds.length > 0) { meds.forEach(function(m){ addDpMedRowWith(detailMedCount++, m); }); }
+      else { addDpMedRow(); }
+    }
+    view.classList.add('d-none');
+    edit.classList.remove('d-none');
+  } else {
+    cancelEdit(secId);
+  }
+}
+function cancelEdit(secId) {
+  var view = document.getElementById(secId+'-view');
+  var edit = document.getElementById(secId+'-edit');
+  if (view) view.classList.remove('d-none');
+  if (edit) edit.classList.add('d-none');
+}
+
+// ── SAVE DETAIL SECTION ───────────────────────────────────────
+function saveDetail(section, pid) {
+  var p = getPatients().find(function(x){ return x.id == pid; });
+  if (!p) return;
+  var updates = {};
+
+  if (section === 'patient') {
+    updates = {
+      name:     document.getElementById('dp-name').value.trim(),
+      age:      document.getElementById('dp-age').value,
+      gender:   document.getElementById('dp-gender').value,
+      village:  document.getElementById('dp-village').value.trim(),
+      district: document.getElementById('dp-district').value.trim(),
+      disease:  document.getElementById('dp-disease').value.trim(),
+      contact:  document.getElementById('dp-contact').value.trim(),
+      hospital: document.getElementById('dp-hospital').value.trim(),
+      notes:    document.getElementById('dp-notes').value.trim()
+    };
+  } else if (section === 'medicine') {
+    var meds = collectDpMeds();
+    var first = meds[0] || {};
+    updates = { medicines: meds, medicine: first.name||'', medFreq: first.freq||'', medTime: first.time||'08:00', medNotes: first.notes||'' };
+  } else if (section === 'checkup') {
+    updates = {
+      checkupDate: document.getElementById('dp-checkdate').value,
+      checkupFreq: document.getElementById('dp-checkfreq').value,
+      hospital:    document.getElementById('dp-checkhospital').value.trim()
+    };
+  } else if (section === 'medlog') {
+    var selects = document.querySelectorAll('.dp-medlog-status');
+    var ml = (p.medicineLog || []).slice();
+    selects.forEach(function(sel) {
+      var i = parseInt(sel.dataset.idx);
+      if (ml[i]) { ml[i].status = sel.value; ml[i].by = 'HW (edited)'; }
+    });
+    updates = { medicineLog: ml };
+  } else if (section === 'chklog') {
+    var selects2 = document.querySelectorAll('.dp-chklog-status');
+    var cl = (p.checkupLog || []).slice();
+    selects2.forEach(function(sel) {
+      var i = parseInt(sel.dataset.idx);
+      if (cl[i]) { cl[i].status = sel.value; cl[i].by = 'HW (edited)'; }
+    });
+    updates = { checkupLog: cl };
+  }
+
+  updatePatientFull(pid, updates);
+  showToast('Saved successfully!');
+  var updated = getPatients().find(function(x){ return x.id == pid; });
+  buildDetailPanel(updated);
+  renderStats();
+}
+
+// ── DETAIL MEDICINE ROW BUILDER ───────────────────────────────
+function addDpMedRow() { addDpMedRowWith(detailMedCount++, null); }
+function addDpMedRowWith(idx, data) {
+  var d = data || {name:'',freq:'',time:'08:00',notes:''};
+  var freqOpts = ['Daily Once','Daily Twice (Morning & Night)','Daily Thrice','Weekly Once','As Needed'];
+  var opts = freqOpts.map(function(o){ return '<option'+(d.freq===o?' selected':'')+'>'+o+'</option>'; }).join('');
+  var container = document.getElementById('dp-med-rows');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.id = 'dpmedrow-'+idx;
+  div.className = 'card mb-2';
+  div.style.cssText = 'border:1.5px solid var(--border);border-radius:10px';
+  div.innerHTML = '<div class="card-body p-3">'
+    + '<div class="d-flex justify-content-between align-items-center mb-2">'
+    + '<span class="fw-bold text-primary" style="font-size:0.85rem"><i class="fa-solid fa-pills me-1"></i>Medicine '+(idx+1)+'</span>'
+    + (idx > 0 ? '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDpMedRow('+idx+')"><i class="fa-solid fa-trash"></i></button>' : '')
+    + '</div>'
+    + '<div class="row g-2">'
+    + '<div class="col-12"><label class="form-label" style="font-size:0.8rem">Medicine Name *</label><input type="text" class="form-control form-control-sm dpmed-name" data-idx="'+idx+'" value="'+safeStr(d.name)+'" placeholder="e.g. Metformin 500mg"></div>'
+    + '<div class="col-md-5"><label class="form-label" style="font-size:0.8rem">Frequency</label><select class="form-select form-select-sm dpmed-freq" data-idx="'+idx+'"><option value="">Select</option>'+opts+'</select></div>'
+    + '<div class="col-md-4"><label class="form-label" style="font-size:0.8rem">Reminder Time</label><input type="time" class="form-control form-control-sm dpmed-time" data-idx="'+idx+'" value="'+(d.time||'08:00')+'"></div>'
+    + '<div class="col-12"><label class="form-label" style="font-size:0.8rem">Notes</label><input type="text" class="form-control form-control-sm dpmed-notes" data-idx="'+idx+'" value="'+safeStr(d.notes||'')+'" placeholder="e.g. Take after food"></div>'
+    + '</div></div>';
+  container.appendChild(div);
+}
+function removeDpMedRow(idx) { var el = document.getElementById('dpmedrow-'+idx); if (el) el.remove(); }
+function collectDpMeds() {
+  var rows = document.querySelectorAll('#dp-med-rows .card');
+  var meds = [];
+  rows.forEach(function(row) {
+    var name  = (row.querySelector('.dpmed-name') || {}).value || '';
+    var freq  = (row.querySelector('.dpmed-freq') || {}).value || '';
+    var time  = (row.querySelector('.dpmed-time') || {}).value || '08:00';
+    var notes = (row.querySelector('.dpmed-notes') || {}).value || '';
+    if (name.trim()) meds.push({name: name.trim(), freq: freq, time: time, notes: notes});
+  });
+  return meds;
+}
+
+// ── QUICK EDIT MODAL ──────────────────────────────────────────
+function openQuickEdit(id) {
+  var p = getPatients().find(function(x){ return x.id == id; });
+  if (!p) return;
+  document.getElementById('ePatId').value = id;
+  document.getElementById('editPatName').textContent = p.name;
+  document.getElementById('eName').value     = p.name || '';
+  document.getElementById('eAge').value      = p.age  || '';
+  document.getElementById('eGender').value   = p.gender || 'Male';
+  document.getElementById('eVillage').value  = p.village || '';
+  document.getElementById('eDistrict').value = p.district || '';
+  document.getElementById('eDisease').value  = p.disease || '';
+  document.getElementById('eContact').value  = p.contact || '';
+  document.getElementById('eHospital').value = p.hospital || '';
+  document.getElementById('eNotes').value    = p.notes || '';
+  document.getElementById('eMed').value      = p.medicine || '';
+  document.getElementById('eMedFreq').value  = p.medFreq || 'Daily Once';
+  document.getElementById('eMedTime').value  = p.medTime || '08:00';
+  document.getElementById('eMedNotes').value = p.medNotes || '';
+  document.getElementById('eCheckDate').value = p.checkupDate || '';
+  document.getElementById('eCheckFreq').value = p.checkupFreq || 'Monthly';
+  editPatModal.show();
+}
+function saveQuickEdit() {
+  var id = document.getElementById('ePatId').value;
+  updatePatientFull(id, {
+    name: document.getElementById('eName').value,
+    age: document.getElementById('eAge').value,
+    gender: document.getElementById('eGender').value,
+    village: document.getElementById('eVillage').value,
+    district: document.getElementById('eDistrict').value,
+    disease: document.getElementById('eDisease').value,
+    contact: document.getElementById('eContact').value,
+    hospital: document.getElementById('eHospital').value,
+    notes: document.getElementById('eNotes').value,
+    medicine: document.getElementById('eMed').value,
+    medFreq: document.getElementById('eMedFreq').value,
+    medTime: document.getElementById('eMedTime').value,
+    medNotes: document.getElementById('eMedNotes').value,
+    checkupDate: document.getElementById('eCheckDate').value,
+    checkupFreq: document.getElementById('eCheckFreq').value
+  });
+  editPatModal.hide();
+  renderAll();
+  showToast('Patient updated!');
+}
+
+// ── ALERTS ────────────────────────────────────────────────────
+function renderAlerts() {
+  var rawAlerts = JSON.parse(localStorage.getItem('govhealth_hw_alerts')||'[]').filter(function(a){ return a.hwId===hwUser.id; });
+  var pts = getPats();
+  var el = document.getElementById('alertsList');
+  var html = '';
+  rawAlerts.slice(0,20).forEach(function(a) {
+    var isNew = !a.read;
+    var pat = pts.find(function(p){ return p.id == a.patientId; });
+    html += '<div class="alert-row '+(a.type==='med_missed'?'ar-red':a.type==='checkup_missed'?'ar-orange':'ar-blue')+'" style="opacity:'+(isNew?1:0.65)+'">';
+    html += '<div class="ar-icon '+(a.type==='med_missed'?'text-danger':'text-warning')+'">'+(a.type==='med_missed'?'💊':'📅')+'</div>';
+    html += '<div class="flex-grow-1"><div class="ar-title">'+a.msg+'</div><div class="ar-sub">'+a.at+'</div></div>';
+    html += '<div class="ar-actions">'+(isNew?'<button class="btn btn-sm btn-outline-secondary" onclick="markAlertRead(\''+a.at+'\')">Mark Read</button>':'');
+    html += '<a href="tel:'+(pat?pat.contact:'')+'" class="btn btn-sm btn-success"><i class="fa-solid fa-phone me-1"></i>Call</a></div></div>';
+  });
+  pts.forEach(function(p) {
+    var consec = countConsecutiveMissed(p.medicineLog||[]);
+    if (consec >= 2) {
+      html += '<div class="alert-row ar-red"><div class="ar-icon text-danger">💊</div>';
+      html += '<div class="flex-grow-1"><div class="ar-title">⚠️ '+p.name+' missed medicine for '+consec+' consecutive days!</div><div class="ar-sub">'+p.disease+' | '+p.village+' | '+p.contact+'</div></div>';
+      html += '<div class="ar-actions"><button class="btn btn-sm btn-danger" onclick="hwMarkMed('+p.id+',\'Taken\')">Mark Taken</button><a href="tel:'+p.contact+'" class="btn btn-sm btn-success"><i class="fa-solid fa-phone me-1"></i>Call</a></div></div>';
+    }
+    if (isOverdue(p.checkupDate)) {
+      html += '<div class="alert-row ar-orange"><div class="ar-icon text-warning">📅</div>';
+      html += '<div class="flex-grow-1"><div class="ar-title">📅 '+p.name+' checkup overdue since '+p.checkupDate+'</div><div class="ar-sub">'+p.disease+' | '+p.hospital+' | '+p.contact+'</div></div>';
+      html += '<div class="ar-actions"><button class="btn btn-sm btn-primary" onclick="hwMarkCheck('+p.id+',\'Done\')">Mark Done</button><a href="tel:'+p.contact+'" class="btn btn-sm btn-success"><i class="fa-solid fa-phone me-1"></i>Call</a></div></div>';
+    }
+    var dd = daysDiff(p.checkupDate);
+    if (dd >= 0 && dd <= 3) {
+      html += '<div class="alert-row ar-blue"><div class="ar-icon text-primary">📅</div>';
+      html += '<div class="flex-grow-1"><div class="ar-title">📅 '+p.name+' checkup due in '+dd+' day'+(dd===1?'':'s')+' — '+p.checkupDate+'</div><div class="ar-sub">'+p.hospital+' | '+p.contact+'</div></div>';
+      html += '<div class="ar-actions"><a href="tel:'+p.contact+'" class="btn btn-sm btn-success"><i class="fa-solid fa-phone me-1"></i>Remind</a></div></div>';
+    }
+  });
+  el.innerHTML = html || '<p class="text-muted text-center py-4">✅ No alerts. All patients on track!</p>';
+}
+function markAlertRead(at) {
+  var list = JSON.parse(localStorage.getItem('govhealth_hw_alerts')||'[]');
+  var i = list.findIndex(function(a){ return a.at === at; });
+  if (i > -1) list[i].read = true;
+  localStorage.setItem('govhealth_hw_alerts', JSON.stringify(list));
+  renderAll();
+}
+
+// ── SOS ───────────────────────────────────────────────────────
+function renderSOS() {
+  var all = getEmergencyRequests().filter(function(r){ return r.hwId===hwUser.id||!r.hwId; });
+  var el = document.getElementById('sosList');
+  if (!all.length) { el.innerHTML = '<p class="text-muted text-center py-4">No SOS requests.</p>'; return; }
+  var html = '';
+  all.forEach(function(r) {
+    var cls = r.status==='Pending'?'sos-pending':r.status==='In Progress'?'sos-inprog':'sos-done';
+    var badgeColor = r.status==='Pending'?'danger':r.status==='In Progress'?'warning':'success';
+    var hist = (r.statusHistory||[]).map(function(h){ return '<small style="display:block;color:var(--text-muted)">'+h.status+' by '+h.by+' at '+h.at+'</small>'; }).join('');
+    html += '<div class="sos-card '+cls+'">';
+    html += '<div class="d-flex justify-content-between align-items-start mb-2"><div><strong>'+r.name+'</strong>, Age '+r.age+' <span class="badge bg-'+badgeColor+' ms-2">'+r.status+'</span></div><small class="text-muted">'+r.timestamp+'</small></div>';
+    html += '<div style="font-size:0.85rem"><i class="fa-solid fa-phone me-1 text-muted"></i>'+(r.phone||'–')+' &nbsp; <i class="fa-solid fa-location-dot me-1 text-muted"></i>'+r.location+'</div>';
+    html += '<div style="font-size:0.85rem;margin-top:4px"><i class="fa-solid fa-notes-medical me-1 text-muted"></i>'+r.description+'</div>';
+    html += '<div class="mt-2" style="font-size:0.78rem;color:var(--text-muted)">'+hist+'</div>';
+    html += '<div class="d-flex gap-2 mt-2 flex-wrap">';
+    if (r.status==='Pending') html += '<button class="btn btn-sm btn-warning" onclick="updateSOS('+r.id+',\'In Progress\')"><i class="fa-solid fa-spinner me-1"></i>In Progress</button>';
+    if (r.status!=='Completed') html += '<button class="btn btn-sm btn-success" onclick="updateSOS('+r.id+',\'Completed\')"><i class="fa-solid fa-check me-1"></i>Completed</button>';
+    html += '<a href="tel:'+(r.phone||'')+'" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-phone me-1"></i>Call</a>';
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
+function updateSOS(id, status) { updateSOSStatus(id, status, hwUser.name); renderAll(); showToast('SOS marked as '+status); }
+
+// ── PATIENT ACTIONS ───────────────────────────────────────────
+function hwMarkMed(pid, status) {
+  logMedicine(pid, status, 'HW');
+  renderAll();
+  showToast(status==='Taken' ? '✅ Marked as taken' : '⚠️ Marked as missed', status==='Taken' ? 'success' : 'error');
+}
+function hwMarkCheck(pid, status) {
+  logCheckup(pid, status, 'HW');
+  renderAll();
+  showToast(status==='Done' ? '✅ Checkup marked done' : '⚠️ Checkup missed marked');
+}
+
+// ── ADD PATIENT MEDICINE ROWS ─────────────────────────────────
+function addMedRow() {
+  var freqOpts = ['Daily Once','Daily Twice (Morning & Night)','Daily Thrice','Weekly Once','As Needed'];
+  var opts = freqOpts.map(function(o){ return '<option>'+o+'</option>'; }).join('');
+  var idx = addMedCount;
+  var container = document.getElementById('medRowsContainer');
+  var div = document.createElement('div');
+  div.id = 'medrow-'+idx;
+  div.className = 'card mb-3';
+  div.style.cssText = 'border:1.5px solid var(--border);border-radius:10px';
+  div.innerHTML = '<div class="card-body p-3">'
+    + '<div class="d-flex justify-content-between align-items-center mb-2">'
+    + '<span class="fw-bold text-primary" style="font-size:0.88rem"><i class="fa-solid fa-pills me-1"></i>Medicine '+(idx+1)+'</span>'
+    + (idx > 0 ? '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeMedRow('+idx+')"><i class="fa-solid fa-trash me-1"></i>Remove</button>' : '')
+    + '</div>'
+    + '<div class="row g-2">'
+    + '<div class="col-12"><label class="form-label" style="font-size:0.82rem">Medicine Name *</label><input type="text" class="form-control form-control-sm med-name" data-idx="'+idx+'" placeholder="e.g. Metformin 500mg" required></div>'
+    + '<div class="col-md-5"><label class="form-label" style="font-size:0.82rem">Frequency *</label><select class="form-select form-select-sm med-freq" data-idx="'+idx+'"><option value="">Select</option>'+opts+'</select></div>'
+    + '<div class="col-md-4"><label class="form-label" style="font-size:0.82rem">Reminder Time *</label><input type="time" class="form-control form-control-sm med-time" data-idx="'+idx+'" value="08:00"></div>'
+    + '<div class="col-12"><label class="form-label" style="font-size:0.82rem">Notes</label><input type="text" class="form-control form-control-sm med-notes" data-idx="'+idx+'" placeholder="e.g. Take after food"></div>'
+    + '</div></div>';
+  container.appendChild(div);
+  addMedCount++;
+}
+function removeMedRow(idx) { var el = document.getElementById('medrow-'+idx); if (el) el.remove(); }
+function collectAddMeds() {
+  var rows = document.querySelectorAll('#medRowsContainer .card');
+  var meds = [];
+  rows.forEach(function(row) {
+    var name  = (row.querySelector('.med-name') || {}).value || '';
+    var freq  = (row.querySelector('.med-freq') || {}).value || '';
+    var time  = (row.querySelector('.med-time') || {}).value || '08:00';
+    var notes = (row.querySelector('.med-notes') || {}).value || '';
+    if (name.trim()) meds.push({name:name.trim(),freq:freq,time:time,notes:notes});
+  });
+  return meds;
+}
+
+// ── SUBMIT ADD PATIENT ────────────────────────────────────────
+function submitAddPatient(e) {
+  e.preventDefault();
+  var username = document.getElementById('pUsername').value.trim();
+  var password = document.getElementById('pPassword').value;
+  var result = authSignup({role:'patient', name:document.getElementById('pName').value.trim(), username:username, password:password,
+    phone:document.getElementById('pContact').value.trim(), village:document.getElementById('pVillage').value.trim(), district:document.getElementById('pDistrict').value});
+  if (!result.ok) { showToast(result.msg, 'error'); return; }
+  var meds = collectAddMeds();
+  var firstMed = meds[0] || {name:'',freq:'Daily Once',time:'08:00',notes:''};
+  savePatient({
+    name:document.getElementById('pName').value.trim(), age:document.getElementById('pAge').value,
+    gender:document.getElementById('pGender').value, village:document.getElementById('pVillage').value.trim(),
+    district:document.getElementById('pDistrict').value, disease:document.getElementById('pDisease').value.trim(),
+    contact:document.getElementById('pContact').value.trim(), hospital:document.getElementById('pHospital').value.trim(),
+    patUsername:username, patUserId:result.user.id, hwId:hwUser.id, hwName:hwUser.name, hwPhone:hwUser.phone,
+    medicines:meds, medicine:firstMed.name, medFreq:firstMed.freq, medTime:firstMed.time, medNotes:firstMed.notes,
+    checkupDate:document.getElementById('pCheckDate').value, checkupFreq:document.getElementById('pCheckFreq').value,
+    notes:document.getElementById('pNotes').value.trim(), medStatus:'Active', checkupStatus:'Scheduled'
+  });
+  e.target.reset();
+  document.getElementById('medRowsContainer').innerHTML = '';
+  addMedCount = 0; addMedRow(); asStep(1);
+  renderAll(); switchTab('patients');
+  showToast('Patient registered! Login: ' + username);
+}
+
+function doLogout() { clearSession(); window.location.href = 'login.html'; }
+</script>
+</body>
+</html>

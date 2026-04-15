@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GovHealth Monitor – Telangana Hospital Resource & Emergency System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="fa-solid fa-hospital-user"></i></div>
+      <div>
+        <div class="brand-title">GovHealth Monitor</div>
+        <div class="brand-sub d-none d-md-block">తెలంగాణ ఆరోగ్య పర్యవేక్షణ</div>
+      </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link active" href="index.html"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="fa-solid fa-hospital me-1"></i>Hospitals</a></li>
+        <li class="nav-item"><a class="nav-link" href="emergency.html"><i class="fa-solid fa-bell-ring me-1"></i>Emergency</a></li>
+        <li class="nav-item"><a class="nav-link" href="schemes.html"><i class="fa-solid fa-hand-holding-heart me-1"></i>Schemes</a></li>
+        <li class="nav-item"><a class="nav-link" href="elderly-care.html"><i class="fa-solid fa-person-cane me-1"></i>Elderly Care</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="fa-solid fa-circle-info me-1"></i>About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html"><i class="fa-solid fa-envelope me-1"></i>Contact</a></li>
+        <li class="nav-item ms-lg-2" id="navAuthItem"><a class="nav-link btn-admin-nav" href="login.html"><i class="fa-solid fa-lock me-1"></i>Login</a></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-outline-light" id="darkModeToggle" onclick="toggleDark()"><i class="fa-solid fa-moon"></i></button></li>
+        <li class="nav-item ms-lg-1"><button class="btn btn-sm btn-lang" id="langToggle" onclick="toggleLang()">తెలుగు</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-section">
+  <div class="hero-bg-pattern"></div>
+  <div class="container py-5">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-7 hero-text-col">
+        <div class="hero-badge mb-3 animate-fadein"><i class="fa-solid fa-shield-heart me-2"></i>Telangana Government Health System</div>
+        <h1 class="hero-title animate-fadein" style="animation-delay:0.1s" data-en="Government Hospital Resource Monitoring & Elderly Emergency Assistance — Telangana" data-te="ప్రభుత్వ ఆసుపత్రి వనరుల పర్యవేక్షణ & వృద్ధుల అత్యవసర సహాయం — తెలంగాణ">
+          Government Hospital Resource Monitoring<br>& Elderly Emergency Assistance<br><span style="color:#FFB300">Telangana</span>
+        </h1>
+        <p class="hero-desc animate-fadein" style="animation-delay:0.2s" data-en="Real-time availability of beds, ICU, equipment and doctors across Telangana government hospitals. Emergency SOS and elderly care support." data-te="తెలంగాణ ప్రభుత్వ ఆసుపత్రులలో బెడ్లు, ICU, పరికరాలు మరియు వైద్యుల రియల్-టైమ్ లభ్యత.">
+          Real-time availability of beds, ICU, equipment and doctors across Telangana government hospitals. Emergency SOS and elderly care support.
+        </p>
+        <div class="d-flex flex-wrap gap-3 mt-4 animate-fadein" style="animation-delay:0.3s">
+          <a href="dashboard.html" class="btn btn-hero-primary"><i class="fa-solid fa-hospital me-2"></i>Find Hospitals</a>
+          <a href="elderly-care.html" class="btn btn-hero-secondary"><i class="fa-solid fa-person-cane me-2"></i>Elderly Care</a>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center mt-5 mt-lg-0 animate-fadein" style="animation-delay:0.4s">
+        <div class="hero-stats-card">
+          <div class="row g-3">
+            <div class="col-6"><div class="stat-box"><div class="stat-num" id="statHosp">10</div><div class="stat-label">Hospitals</div></div></div>
+            <div class="col-6"><div class="stat-box"><div class="stat-num" id="statBeds">–</div><div class="stat-label">Available Beds</div></div></div>
+            <div class="col-6"><div class="stat-box"><div class="stat-num" id="statICU">–</div><div class="stat-label">ICU Beds</div></div></div>
+            <div class="col-6"><div class="stat-box"><div class="stat-num" id="statDoc">–</div><div class="stat-label">Doctors Online</div></div></div>
+          </div>
+          <div class="live-badge mt-3"><span class="live-dot"></span> Live Data Updated — Telangana</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a href="emergency.html" class="sos-float-btn" id="sosFab"><i class="fa-solid fa-bell"></i><span>SOS</span></a>
+</section>
+
+<!-- QUICK ACCESS -->
+<section class="quick-access py-5">
+  <div class="container">
+    <div class="section-head text-center mb-5">
+      <h2 class="section-title" data-en="Quick Access" data-te="త్వరిత యాక్సెస్">Quick Access</h2>
+      <p class="section-sub">Navigate to important sections quickly</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="dashboard.html" class="quick-card">
+          <div class="qc-icon bg-blue"><i class="fa-solid fa-hospital"></i></div>
+          <div class="qc-label">Hospital Dashboard</div>
+          <div class="qc-sub">Beds, ICU, O₂, Equipment</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="emergency.html" class="quick-card emergency-card">
+          <div class="qc-icon bg-red"><i class="fa-solid fa-bell-ring"></i></div>
+          <div class="qc-label">Emergency SOS</div>
+          <div class="qc-sub">Send SOS instantly</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="elderly-care.html" class="quick-card">
+          <div class="qc-icon" style="background:linear-gradient(135deg,#7B1FA2,#9C27B0)"><i class="fa-solid fa-person-cane"></i></div>
+          <div class="qc-label">Elderly Care</div>
+          <div class="qc-sub">Medicine & checkup tracking</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="schemes.html" class="quick-card">
+          <div class="qc-icon bg-green"><i class="fa-solid fa-hand-holding-heart"></i></div>
+          <div class="qc-label">Gov Schemes</div>
+          <div class="qc-sub">Telangana & Central</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="login.html" class="quick-card">
+          <div class="qc-icon" style="background:linear-gradient(135deg,#0D47A1,#1565C0)"><i class="fa-solid fa-lock"></i></div>
+          <div class="qc-label">Login</div>
+          <div class="qc-sub">Admin / Health Worker</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="contact.html" class="quick-card">
+          <div class="qc-icon bg-orange"><i class="fa-solid fa-phone-volume"></i></div>
+          <div class="qc-label">Contact</div>
+          <div class="qc-sub">Get help & support</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USER ROLES SECTION -->
+<section class="py-5" style="background:var(--surface)">
+  <div class="container">
+    <h2 class="section-title text-center mb-5">Who Can Use This System?</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="step-card text-center">
+          <div class="step-icon"><i class="fa-solid fa-user-shield" style="color:#1565C0"></i></div>
+          <h5>Admin</h5>
+          <p>Manages hospital resources, updates beds and equipment, views all emergency SOS requests, and oversees the entire system.</p>
+          <a href="login.html" class="btn btn-sm btn-primary">Admin Login</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card text-center">
+          <div class="step-icon"><i class="fa-solid fa-user-nurse" style="color:#7B1FA2"></i></div>
+          <h5>Health Worker</h5>
+          <p>Adds elderly patients, schedules medicines and checkups, tracks compliance, sends reminders and logs missed medicine alerts.</p>
+          <a href="login.html" class="btn btn-sm btn-primary">Health Worker Login</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card text-center">
+          <div class="step-icon"><i class="fa-solid fa-user" style="color:#2E7D32"></i></div>
+          <h5>Patient / Family</h5>
+          <p>Checks hospital availability, sends emergency SOS, views government schemes, and gets information without login required.</p>
+          <a href="dashboard.html" class="btn btn-sm btn-success">Check Hospitals</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EMERGENCY BANNER -->
+<section class="emergency-banner py-5">
+  <div class="container">
+    <div class="emer-banner-inner">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h3 class="mb-2"><i class="fa-solid fa-siren-on me-2"></i>Need Emergency Help?</h3>
+          <p class="mb-0">Click SOS to send emergency request immediately. For ambulance call <strong>108</strong> directly.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+          <a href="emergency.html" class="btn btn-sos-large"><i class="fa-solid fa-bell-ring me-2"></i>SOS Emergency</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOSPITAL PREVIEW -->
+<section class="featured-hospitals py-5">
+  <div class="container">
+    <div class="section-head d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title mb-0">Telangana Hospitals</h2>
+      <a href="dashboard.html" class="btn btn-outline-primary btn-sm">View All <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row g-3" id="homHospList"></div>
+  </div>
+</section>
+
+<!-- SCHEMES PREVIEW -->
+<section class="schemes-preview py-5">
+  <div class="container">
+    <div class="section-head text-center mb-4">
+      <h2 class="section-title">Telangana Healthcare Schemes</h2>
+      <p class="section-sub">Free healthcare for BPL families in Telangana</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4"><div class="scheme-preview-card"><div class="sp-icon" style="color:#C62828"><i class="fa-solid fa-heart-pulse"></i></div><h5>Rajiv Aarogyasri</h5><p>Free treatment up to ₹5 lakhs/year for BPL families. Covers 3,000+ procedures at empanelled hospitals.</p><a href="schemes.html" class="btn btn-sm btn-scheme">Learn More</a></div></div>
+      <div class="col-md-4"><div class="scheme-preview-card"><div class="sp-icon" style="color:#1565C0"><i class="fa-solid fa-house-medical"></i></div><h5>Basti & Palle Dawakhana</h5><p>Free OPD, medicines and diagnostics at urban and rural health centers across Telangana.</p><a href="schemes.html" class="btn btn-sm btn-scheme">Learn More</a></div></div>
+      <div class="col-md-4"><div class="scheme-preview-card"><div class="sp-icon" style="color:#1565C0"><i class="fa-solid fa-star"></i></div><h5>Ayushman Bharat</h5><p>₹5 lakh health cover per family from Central Government for secondary and tertiary care.</p><a href="schemes.html" class="btn btn-sm btn-scheme">Learn More</a></div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="footer-brand mb-3"><i class="fa-solid fa-hospital-user me-2"></i>GovHealth Monitor</div>
+        <p class="footer-desc">Empowering Telangana communities with real-time hospital resource information and emergency assistance.</p>
+        <div class="footer-emergency mt-3"><i class="fa-solid fa-phone me-2"></i>Emergency: <strong>108</strong></div>
+      </div>
+      <div class="col-md-2">
+        <h6 class="footer-head">Navigation</h6>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Hospitals</a></li>
+          <li><a href="emergency.html">Emergency</a></li>
+          <li><a href="elderly-care.html">Elderly Care</a></li>
+          <li><a href="schemes.html">Schemes</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h6 class="footer-head">Info</h6>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="login.html">Login</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="footer-head">Emergency Helplines</h6>
+        <div class="helpline-list">
+          <div class="helpline-item"><span>Medical Emergency</span><strong>108</strong></div>
+          <div class="helpline-item"><span>Health Helpline</span><strong>104</strong></div>
+          <div class="helpline-item"><span>Women Helpline</span><strong>181</strong></div>
+          <div class="helpline-item"><span>Senior Citizen</span><strong>14567</strong></div>
+          <div class="helpline-item"><span>Aarogyasri</span><strong>1800-425-104</strong></div>
+        </div>
+      </div>
+    </div>
+    <hr class="footer-divider">
+    <div class="text-center footer-copy">© 2025 GovHealth Monitor | Telangana State Health Department</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script><script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const hosps=getHospitals();
+  document.getElementById('statBeds').textContent=hosps.reduce((s,h)=>s+h.beds.available,0);
+  document.getElementById('statICU').textContent=hosps.reduce((s,h)=>s+h.beds.icu,0);
+  document.getElementById('statDoc').textContent=hosps.reduce((s,h)=>s+h.staff.doctors,0);
+  const list=document.getElementById('homHospList');
+  hosps.slice(0,3).forEach(h=>{
+    list.innerHTML+=`<div class="col-md-4">
+      <div class="hosp-preview-card">
+        <div class="hpc-header">
+          <div><div class="hpc-name">${h.name}</div><div class="hpc-loc"><i class="fa-solid fa-location-dot me-1"></i>${h.location}</div></div>
+          <div class="hpc-status ${h.beds.available>20?'status-ok':'status-low'}">${h.beds.available>20?'Available':'Low'}</div>
+        </div>
+        <div class="hpc-stats mt-2">
+          <div class="hpc-stat"><i class="fa-solid fa-bed text-primary"></i><span>${h.beds.available}</span><small>Beds</small></div>
+          <div class="hpc-stat"><i class="fa-solid fa-heart-pulse text-danger"></i><span>${h.beds.icu}</span><small>ICU</small></div>
+          <div class="hpc-stat"><i class="fa-solid fa-wind text-info"></i><span>${h.equipment.oxygen}</span><small>O₂</small></div>
+          <div class="hpc-stat"><i class="fa-solid fa-user-doctor text-success"></i><span>${h.staff.doctors}</span><small>Doctors</small></div>
+        </div>
+        <a href="dashboard.html" class="btn btn-sm btn-view-hosp mt-2 w-100">View Full Details</a>
+      </div>
+    </div>`;
+  });
+});
+</script>
+</body>
+</html>
+
